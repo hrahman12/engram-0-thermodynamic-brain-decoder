@@ -3,13 +3,11 @@ engram_3d_server.py
 ===================
 Engram-0: Local HTTP & Live Telemetry Server for the 3D UI Command Center.
 
-Serves `engram_0_3d_ui.html` and provides live JSON API endpoints backed
-directly by `connectome_ir.py`, `reversible_thermo_engram.py`,
-`semantic_tokenizer.py`, `spi_persona_engine.py`, and `verify_dynamics.py`:
-  - GET  /                   -> Interactive 3D Command Center UI
-  - GET  /api/telemetry      -> Full 3D Connectome, Hopfield, and 50-trial ledger JSON
-  - POST /api/decode         -> Live 35% Poisson probe decoding & tokenization
-  - POST /api/query_spi      -> Live strictly-gated query to Dr. Alistair Vance SPI
+Serves `engram0/web/index.html` (and `connectome_hopfield.html`, `thermo_spi.html`,
+`engram_0_3d_ui.html`, and 28 FreeSurfer/ENIGMA binary brain meshes) and provides
+live JSON API endpoints backed directly by `connectome_ir.py`,
+`reversible_thermo_engram.py`, `semantic_tokenizer.py`, `spi_persona_engine.py`,
+and `verify_dynamics.py`.
 """
 
 from __future__ import annotations
@@ -20,7 +18,6 @@ import mimetypes
 from pathlib import Path
 from typing import Dict
 from urllib.parse import urlparse
-import numpy as np
 
 from connectome_ir import ConnectomeIR
 from reversible_thermo_engram import BIOLOGICAL_TEMP_K, TARGET_THETA_HZ, ReversibleThermoEngram
@@ -74,7 +71,16 @@ class Engram3DRequestHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         req_path = parsed.path
 
-        if req_path in ("/", "/index.html", "/engram_0_3d_ui.html"):
+        if req_path in ("/", "/index.html"):
+            html_bytes = (WEB_DIR / "index.html").read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(html_bytes)))
+            self.end_headers()
+            self.wfile.write(html_bytes)
+            return
+
+        if req_path == "/engram_0_3d_ui.html":
             html_bytes = UI_HTML_FILE.read_bytes()
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
@@ -88,7 +94,6 @@ class Engram3DRequestHandler(BaseHTTPRequestHandler):
             self._send_json(data)
             return
 
-        # Serve static files from engram0/web/ (including anatomy/*.bin, style.css, etc.)
         rel = req_path.lstrip("/")
         if rel.startswith("engram0/web/"):
             rel = rel[len("engram0/web/"):]

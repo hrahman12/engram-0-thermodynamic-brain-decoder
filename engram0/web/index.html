@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f7f8f5" />
+  <title>Engram-0 · My Little Brain × cortex² × Google H01 3D Studio</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="little_brain_3d.js"></script>
+</head>
+<body>
+  <div class="startup" id="startup-overlay" aria-hidden="true">
+    <div class="startup-character">
+      <div class="startup-brain">
+        <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>
+        <div class="startup-eyes"><i></i><i></i></div>
+      </div>
+      <span class="startup-heart">♥</span>
+      <span class="startup-spark">✦</span>
+    </div>
+    <p>Waking up Dr. Alistair Vance · Engram-0 Digital Twin…</p>
+  </div>
+
+  <div class="app simple-app cx-lab" style="--chat-width: 405px;">
+    <main class="workspace">
+      <header class="simple-header">
+        <div class="workspace-brand">
+          <button type="button" class="icon-button is-active" id="btn-toggle-left" title="Toggle twins &amp; connectome pane">
+            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
+          </button>
+          <span class="cute-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>
+          </span>
+          <span>cortex² × Engram-0 <small class="cx-tagline">Reversible Thermodynamic Brain Decoder · gemini-4-argon (high)</small></span>
+        </div>
+
+        <div class="focused-brain">
+          <span class="twin-dot" id="header-twin-dot" style="background: #9caf8d;"></span>
+          <strong id="header-engram-title">Dr. Alistair Vance · E00 Cryo Vault Bay 7</strong>
+          <span class="brain-status" id="header-brain-status">det(J) = 1.000000 · f_θ = 6.01 Hz · ΔE = -9.42 k_BT</span>
+        </div>
+
+        <div class="simple-header-actions">
+          <button type="button" class="chat-toggle active" onclick="runSymplecticDecode()" title="Integrate 35% Poisson Probe via Störmer-Verlet Leapfrog">
+            <span>⚡ Decode Probe</span>
+          </button>
+          <a href="connectome_hopfield.html" class="chat-toggle" title="Open ConnectomeHopfield 3D Companion">
+            <span>ConnectomeHopfield</span>
+          </a>
+          <a href="thermo_spi.html" class="chat-toggle" title="Open ThermoSPI 310.15K Sleep Pruning Studio">
+            <span>ThermoSPI</span>
+          </a>
+          <button type="button" class="chat-toggle active" id="btn-toggle-right">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+            <span>Vance SPI</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="workspace-body">
+        <aside class="workspace-pane pane-left" id="left-pane" style="width: 300px;" aria-label="Consolidated Engram Twins &amp; Views">
+          <header class="pane-heading">
+            <h2>Dr. Vance Engram Twins (M=8)</h2>
+            <span class="cx-chip completed">6/6 PASS</span>
+          </header>
+
+          <div class="pane-content">
+            <div class="pane-brain-list" id="engram-basin-list"></div>
+
+            <div class="pane-view-tabs" role="tablist">
+              <button type="button" class="selected" data-view="brain" onclick="switchSubView('brain')">
+                <span>🧠 3D Brain &amp; Symplectic Habitat</span>
+                <span>28 meshes</span>
+              </button>
+              <button type="button" data-view="h01" onclick="switchSubView('h01')">
+                <span>🔬 Google H01 Neuroglancer (xy-3d)</span>
+                <span>158 segs</span>
+              </button>
+              <button type="button" data-view="thoughts" onclick="switchSubView('thoughts')">
+                <span>💭 Semantic Tokens &amp; Thoughts</span>
+                <span id="thought-count-badge">8</span>
+              </button>
+              <button type="button" data-view="assertions" onclick="switchSubView('assertions')">
+                <span>🛡️ 6 Sandbox Assertions &amp; Physics</span>
+                <span>50 MC</span>
+              </button>
+            </div>
+
+            <div class="cx-section" style="padding: 10px 14px;">
+              <div class="cx-section-head">
+                <h3>REM Theta &amp; Cortical Bands</h3>
+                <span class="cx-live on" id="theta-status-pill">● 6.01 Hz LOCKED</span>
+              </div>
+              <div class="cx-bands">
+                <div class="cx-band delta"><span>delta</span><div><i style="width: 14%"></i></div><b>14%</b></div>
+                <div class="cx-band theta"><span>theta</span><div><i id="bar-theta" style="width: 48%"></i></div><b id="val-theta-pct">48%</b></div>
+                <div class="cx-band alpha"><span>alpha</span><div><i style="width: 19%"></i></div><b>19%</b></div>
+                <div class="cx-band beta"><span>beta</span><div><i style="width: 11%"></i></div><b>11%</b></div>
+                <div class="cx-band gamma"><span>gamma</span><div><i style="width: 8%"></i></div><b>8%</b></div>
+              </div>
+            </div>
+
+            <div class="pane-bottom">
+              <a href="connectome_hopfield.html" class="cx-bottom-link">🧠 ConnectomeHopfield · 3D Symplectic Decoder</a>
+              <a href="thermo_spi.html" class="cx-bottom-link">🔥 ThermoSPI · 310.15K Pruning &amp; Auto-Heal</a>
+            </div>
+          </div>
+        </aside>
+
+        <section class="main-content">
+          <div class="simple-habitat cx-habitat with-qviz" id="habitat-view">
+            <div class="brain-scene" id="brain-scene-container">
+              <div class="energy-pill">
+                <span>Focus</span>
+                <meter id="focus-meter" min="0" max="100" value="99"></meter>
+                <small id="focus-text">99.96% · ΔE = -9.42 k_BT · Rev MSE = 2.19e-34</small>
+              </div>
+
+              <div class="cx-tracestrip" id="live-tracestrip" aria-label="Live Symplectic Leapfrog &amp; Cortical Traces"></div>
+
+              <a class="brain-anatomy-note" href="anatomy/README.txt" target="_blank" rel="noreferrer">
+                fsaverage cortex · ENIGMA subcortex · IBM-1 × Google H01 (158 C3 segments)
+              </a>
+            </div>
+          </div>
+
+          <div class="scene-options" id="scene-options-bar">
+            <button type="button" class="selected" id="opt-inside" onclick="toggleSceneOption('inside')"><span>Inside</span></button>
+            <button type="button" class="selected" id="opt-fibers" onclick="toggleSceneOption('fibers')"><span>Fibers</span></button>
+            <button type="button" class="selected" id="opt-thoughts" onclick="toggleSceneOption('thoughts')"><span>Thoughts</span></button>
+            <button type="button" class="selected" id="opt-butterfly" onclick="toggleSceneOption('butterfly')"><span>Butterfly</span></button>
+            <button type="button" class="selected" id="opt-qviz" onclick="toggleQvizCard()"><span>Hopfield Orbs</span></button>
+            <button type="button" id="opt-reverse" onclick="triggerReverseLeapfrog()"><span>Reverse (-dt)</span></button>
+          </div>
+
+          <section class="cx-qviz" id="home-qviz" aria-label="Continuous Modern Hopfield Softmax Marginals">
+            <header>
+              <strong>Modern Hopfield Softmax s(q*)</strong>
+              <span class="cx-chip completed" id="qviz-chip">det(J) = 1.0</span>
+            </header>
+            <div class="cx-orbs" id="home-orbs"></div>
+            <p class="cx-orb-caption" id="home-orb-caption">
+              U(q) = -E_0 β⁻¹ lse(β X^T q) + U_conf(q) · Core well 57.71 k_BT
+            </p>
+            <div class="cx-budget">
+              <span>Stages 1–3 Latency</span>
+              <div class="cx-budget-track">
+                <span style="width: 11%"></span>
+                <i style="left: 85%"></i>
+              </div>
+              <b>2.79<small>/50ms</small></b>
+            </div>
+            <figure class="cx-figure cx-histogram compact">
+              <div class="cx-hist-rows" id="home-hist-rows"></div>
+              <figcaption>50/50 MC trials ΔE &lt; 0 · 100% spurious dissolved at 310.15 K</figcaption>
+            </figure>
+          </section>
+
+          <div class="feature-page" id="h01-view" style="display: none;">
+            <header>
+              <div>
+                <h1>Google H01 Neuroglancer (`xy-3d`) · 158 C3 Cortical Segments</h1>
+                <p class="feature-note">
+                  Coordinates: <code>[379548.5, 137610.125, 2660.5]</code> · Voxel: <code>8×8×33 nm</code> · Query: <code>#interneuron #L2 NSe&gt;=800 &lt;NSi</code> · ColorSeed: <code>4270253886</code>
+                </p>
+              </div>
+              <button type="button" class="outline-button" onclick="switchSubView('brain')">Back to 3D Brain</button>
+            </header>
+            <div class="plugin-grid" style="grid-template-columns: 1.15fr 1fr;">
+              <div class="plugin-card">
+                <div class="plugin-title">
+                  <span>🔬</span>
+                  <h2>4nm EM Cross-Section &amp; C3 Overlays</h2>
+                  <small>precomputed://gs://h01-release/data/20210601/4nm_raw</small>
+                </div>
+                <canvas id="h01-em-canvas" width="520" height="300" style="width: 100%; height: 260px; border-radius: 14px; background: #14181d;"></canvas>
+                <footer>
+                  <span id="h01-selected-seg-label">Active C3 Segment: 1100054524 (L2 Interneuron)</span>
+                  <button type="button" class="primary-button" onclick="runSymplecticDecode()">Couple to Hopfield X</button>
+                </footer>
+              </div>
+              <div class="plugin-card">
+                <div class="plugin-title">
+                  <span>🧬</span>
+                  <h2>158 Real H01 C3 Segment IDs</h2>
+                  <small>Click segment to inspect &amp; couple</small>
+                </div>
+                <div id="h01-seg-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 5px; max-height: 260px; overflow-y: auto; padding: 4px;"></div>
+                <footer>
+                  <span>NSe &gt;= 800 &lt; NSi · Cortical Layers 1–7</span>
+                  <a href="connectome_hopfield.html" class="outline-button">Open 3D Connectome</a>
+                </footer>
+              </div>
+            </div>
+          </div>
+
+          <div class="simple-thoughts" id="thoughts-list-view" style="display: none;">
+            <div class="thoughts-heading">
+              <div>
+                <h1>Cross-Modal Semantic Tokens &amp; Spatial Thoughts</h1>
+                <p>Click any consolidated memory token stream to lock the 3D brain’s gaze and gate Dr. Alistair Vance’s SPI recall.</p>
+              </div>
+              <button type="button" class="outline-button" onclick="switchSubView('brain')">Back to 3D Brain</button>
+            </div>
+            <div class="thought-list" id="thought-cards-container"></div>
+          </div>
+
+          <div class="feature-page" id="assertions-view" style="display: none;">
+            <header>
+              <div>
+                <h1>Automated Sandbox Verification Ledger (50 Monte Carlo Trials · 35% Poisson Noise)</h1>
+                <p class="feature-note">Pure-software dynamical neural decoder verified across all 6 physics and cognitive grounding assertions.</p>
+              </div>
+              <button type="button" class="outline-button" onclick="switchSubView('brain')">Back to 3D Brain</button>
+            </header>
+            <div class="plugin-grid" id="assertions-cards-grid"></div>
+          </div>
+        </section>
+
+        <aside class="workspace-pane pane-right" id="right-pane" style="width: 405px;" aria-label="Dr. Alistair Vance SPI &amp; Telemetry">
+          <header class="pane-heading">
+            <h2>Dr. Alistair Vance · SPI</h2>
+            <div>
+              <span class="cx-chip synthetic">Zero Vector-DB</span>
+            </div>
+          </header>
+
+          <div class="pane-content">
+            <div class="cx-section" style="padding: 10px 14px;">
+              <div class="cx-stats">
+                <div class="cx-stat"><span>Energy ΔE</span><b id="stat-de">-9.42 k_BT</b></div>
+                <div class="cx-stat"><span>Rev. MSE (-dt)</span><b id="stat-mse">2.19e-34</b></div>
+                <div class="cx-stat"><span>REM Theta f_θ</span><b id="stat-theta">6.01 Hz</b></div>
+                <div class="cx-stat"><span>Core Retained</span><b id="stat-core">99.58%</b></div>
+              </div>
+              <div class="cx-note" id="active-token-pill" style="font-family: ui-monospace, monospace; font-size: 10px; word-break: break-all;"></div>
+            </div>
+
+            <div class="chat-panel">
+              <div class="chat-scroll" id="chat-messages-scroll"></div>
+              <div class="chat-compose cx-compose">
+                <div class="cx-chips">
+                  <button type="button" onclick="sendPresetMessage(0)">✦ Assertion 6: Preservation Query</button>
+                  <button type="button" onclick="sendPresetMessage(1)">⚡ Reverse (-dt) Symplectic Test</button>
+                  <button type="button" onclick="sendPresetMessage(2)">🔥 310.15 K Sleep Pruning</button>
+                </div>
+                <form class="composer compact" onsubmit="submitTwinChat(event)">
+                  <textarea id="chat-input" placeholder="Query Dr. Alistair Vance (strictly gated by active engram tokens)…" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitTwinChat(event);}"></textarea>
+                  <div class="composer-actions">
+                    <button type="submit" class="send-button" aria-label="Send">↑</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script src="index_app.js"></script>
+</body>
+</html>
