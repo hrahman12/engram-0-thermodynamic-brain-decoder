@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="100%" height="100%">
+  <rect width="1200" height="360" fill="#0a0b0e"/>
+  <rect x="16" y="16" width="1168" height="328" rx="6" fill="#101216" stroke="rgba(255,255,255,0.09)"/>
+
+  <text x="48" y="56" fill="#f4a531" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" letter-spacing="2">TWO COOPERATING 3D AGENTS · ONE THERMODYNAMIC PHASE SPACE</text>
+  <text x="48" y="88" fill="#e7e9ee" font-family="IBM Plex Sans, sans-serif" font-size="26" font-weight="700">ConnectomeHopfield Decodes the Trajectory. ThermoSPI Controls Pruning &amp; Persona Recall.</text>
+
+  <g transform="translate(48, 116)">
+    <rect width="520" height="196" rx="4" fill="#07080a" stroke="rgba(91,146,121,0.45)" stroke-width="1.5"/>
+    <text x="22" y="32" fill="#5b9279" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700">AGENT 1 · CONNECTOME-HOPFIELD DECODER (connectome_hopfield.html)</text>
+    <text x="22" y="60" fill="#e7e9ee" font-family="IBM Plex Sans, sans-serif" font-size="14">• Fuses macroscopic IBM-1 neural mass W and microscopic Google H01 L2-L6 slices</text>
+    <text x="22" y="86" fill="#e7e9ee" font-family="IBM Plex Sans, sans-serif" font-size="14">• Projects directed latency kernels into orthonormal engram basis X ∈ R^(64×8)</text>
+    <text x="22" y="112" fill="#e7e9ee" font-family="IBM Plex Sans, sans-serif" font-size="14">• Integrates 35% Poisson noisy probes via Störmer-Verlet leapfrog (det J = 1)</text>
+    <text x="22" y="138" fill="#e7e9ee" font-family="IBM Plex Sans, sans-serif" font-size="14">• Emits settled state q* and phase-space snapshot to browser localStorage</text>
+    <text x="22" y="172" fill="#8a909c" font-family="IBM Plex Mono, monospace" font-size="11">Modules: connectome_ir.py · reversible_thermo_engram.py</text>
+  </g>
+
+  <g transform="translate(580, 195)">
+    <line x1="0" y1="0" x2="40" y2="0" stroke="#f4a531" stroke-width="2.5"/>
+    <polygon points="40,-6 52,0 40,6" fill="#f4a531"/>
+    <text x="-8" y="-14" fill="#f4a531" font-family="IBM Plex Mono, monospace" font-size="10">SNAPSHOT</text>
+    <text x="-4" y="22" fill="#5a8ca8" font-family="IBM Plex Mono, monospace" font-size="10">SELF-HEAL</text>
+  </g>
+
+  <g transform="translate(640, 116)">
+    <rect width="512" height="196" rx="4" fill="#07080a" stroke="rgba(244,165,49,0.45)" stroke-width="1.5"/>
+    <text x="22" y="32" fill="#f4a531" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700">AGENT 2 · THERMO-PRUNER &amp; SPI CORE (thermo_spi.html)</text>
+    <text x="22" y="60" fill="#e7e9ee" font-family="IBM Plex Sans, sans-serif" font-size="14">• Diagnoses 6.00 Hz REM theta drift and shallow spurious trapping (ΔE ≤ 12 k_BT)</text>
+    <text x="22" y="86" fill="#e7e9ee" font-family="IBM Plex Sans, sans-serif" font-size="14">• Executes 310.15 K Johnson-Nyquist thermal pruning &amp; autonomous (γ, β) sweep</text>
+    <text x="22" y="112" fill="#e7e9ee" font-family="IBM Plex Sans, sans-serif" font-size="14">• Emits cross-modal tokens &lt;LOC&gt; &lt;ERA&gt; &lt;VALENCE&gt; &lt;THETA_LOCK&gt; &lt;CONF&gt;</text>
+    <text x="22" y="138" fill="#e7e9ee" font-family="IBM Plex Sans, sans-serif" font-size="14">• Strictly gates Dr. Alistair Vance SPI persona (gemini-4-argon, high)</text>
+    <text x="22" y="172" fill="#8a909c" font-family="IBM Plex Mono, monospace" font-size="11">Modules: semantic_tokenizer.py · spi_persona_engine.py · verify_dynamics.py</text>
+  </g>
+</svg>

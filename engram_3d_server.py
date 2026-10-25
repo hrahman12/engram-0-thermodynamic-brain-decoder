@@ -16,8 +16,11 @@ from __future__ import annotations
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+import mimetypes
 from pathlib import Path
 from typing import Dict
+from urllib.parse import urlparse
+import numpy as np
 
 from connectome_ir import ConnectomeIR
 from reversible_thermo_engram import BIOLOGICAL_TEMP_K, TARGET_THETA_HZ, ReversibleThermoEngram
@@ -27,6 +30,7 @@ from verify_dynamics import run_verification_suite
 
 
 WORKSPACE_DIR = Path(__file__).resolve().parent
+WEB_DIR = WORKSPACE_DIR / "engram0" / "web"
 TELEMETRY_FILE = WORKSPACE_DIR / "engram_0_telemetry.json"
 UI_HTML_FILE = WORKSPACE_DIR / "engram_0_3d_ui.html"
 
@@ -39,8 +43,8 @@ class Engram3DState:
         self.spurious = self.connectome.generate_spurious_attractors(n_spurious=6)
         self.engram = ReversibleThermoEngram(
             X=self.connectome.X,
-            gamma=1.2250,
-            beta=9.00,
+            gamma=1.4375,
+            beta=8.00,
             temperature_k=BIOLOGICAL_TEMP_K,
             f_theta_hz=TARGET_THETA_HZ,
             spurious_basis=self.spurious,
@@ -56,7 +60,7 @@ STATE = Engram3DState()
 
 
 class Engram3DRequestHandler(BaseHTTPRequestHandler):
-    """HTTP handler serving the 3D UI and live Engram-0 dynamical API."""
+    """HTTP handler serving the 3D UI, FreeSurfer/ENIGMA binary meshes, and live Engram-0 dynamical API."""
 
     def _send_json(self, payload: Dict[str, object], status: int = 200) -> None:
         raw = json.dumps(payload).encode("utf-8")
@@ -67,18 +71,52 @@ class Engram3DRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(raw)
 
     def do_GET(self) -> None:  # noqa: N802
-        if self.path in ("/", "/index.html", "/engram_0_3d_ui.html"):
+        parsed = urlparse(self.path)
+        req_path = parsed.path
+
+        if req_path in ("/", "/index.html", "/engram_0_3d_ui.html"):
             html_bytes = UI_HTML_FILE.read_bytes()
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(html_bytes)))
             self.end_headers()
             self.wfile.write(html_bytes)
-        elif self.path == "/api/telemetry":
+            return
+
+        if req_path in ("/api/telemetry", "/api/state"):
             data = json.loads(TELEMETRY_FILE.read_text(encoding="utf-8"))
             self._send_json(data)
-        else:
-            self._send_json({"error": "Not found"}, status=404)
+            return
+
+        # Serve static files from engram0/web/ (including anatomy/*.bin, style.css, etc.)
+        rel = req_path.lstrip("/")
+        if rel.startswith("engram0/web/"):
+            rel = rel[len("engram0/web/"):]
+        candidate = (WEB_DIR / rel).resolve()
+        if not candidate.is_file() and rel.startswith("assets/"):
+            candidate = (WORKSPACE_DIR / rel).resolve()
+        if (
+            (str(candidate).startswith(str(WEB_DIR.resolve())) or str(candidate).startswith(str((WORKSPACE_DIR / "assets").resolve())))
+            and candidate.is_file()
+        ):
+            data = candidate.read_bytes()
+            ctype, _ = mimetypes.guess_type(str(candidate))
+            if candidate.suffix == ".bin":
+                ctype = "application/octet-stream"
+            elif candidate.suffix == ".js":
+                ctype = "application/javascript; charset=utf-8"
+            elif candidate.suffix == ".css":
+                ctype = "text/css; charset=utf-8"
+            elif candidate.suffix == ".svg":
+                ctype = "image/svg+xml"
+            self.send_response(200)
+            self.send_header("Content-Type", ctype or "application/octet-stream")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
+
+        self._send_json({"error": "Not found"}, status=404)
 
     def do_POST(self) -> None:  # noqa: N802
         length = int(self.headers.get("Content-Length", "0"))
@@ -98,6 +136,12 @@ class Engram3DRequestHandler(BaseHTTPRequestHandler):
                 "reversibility_mse": traj.reversibility_mse,
                 "measured_theta_hz": traj.measured_theta_hz,
             })
+        elif self.path == "/api/sleep_prune":
+            report = STATE.engram.sleep_prune_spurious_states(n_samples_per_spurious=8, n_steps=36)
+            self._send_json({"sleep_pruning_report": report.to_dict()})
+        elif self.path == "/api/self_heal":
+            data = json.loads(TELEMETRY_FILE.read_text(encoding="utf-8"))
+            self._send_json(data)
         elif self.path == "/api/query_spi":
             target_idx = int(body.get("target_index", 0))
             query = str(body.get("query", "Where were you right before consciousness was preserved?"))

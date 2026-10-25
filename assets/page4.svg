@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" width="100%" height="100%">
+  <rect width="1200" height="340" fill="#0a0b0e"/>
+  <rect x="16" y="16" width="1168" height="308" rx="6" fill="#101216" stroke="rgba(255,255,255,0.09)"/>
+
+  <text x="48" y="54" fill="#f4a531" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" letter-spacing="2">CONSOLIDATED EPISODIC ENGRAM MANIFOLD (M = 8 CORE BASINS · ΔE ≥ 45 k_BT)</text>
+  <text x="48" y="84" fill="#e7e9ee" font-family="IBM Plex Sans, sans-serif" font-size="24" font-weight="700">The Eight Preserved Cortical-Hippocampal Attractors of Dr. Alistair Vance</text>
+
+  <g transform="translate(48, 108)" font-family="IBM Plex Mono, monospace">
+    <rect x="0" y="0" width="262" height="86" rx="3" fill="#07080a" stroke="#f4a531"/>
+    <text x="12" y="22" fill="#f4a531" font-size="11" font-weight="600">E00 · CRYO_CHAMBER_7 (TERMINAL)</text>
+    <text x="12" y="42" fill="#e7e9ee" font-size="10">LOC: SUB_LEVEL_4_CRYO_VAULT_BAY_7</text>
+    <text x="12" y="58" fill="#8a909c" font-size="10">ERA: 2026_10_24_2358_UTC</text>
+    <text x="12" y="74" fill="#5b9279" font-size="10">Well: 57.7 k_BT · Ret: 99.6%</text>
+
+    <rect x="280" y="0" width="262" height="86" rx="3" fill="#07080a" stroke="rgba(255,255,255,0.1)"/>
+    <text x="292" y="22" fill="#5a8ca8" font-size="11" font-weight="600">E01 · H01_SYNAPTIC_MAP</text>
+    <text x="292" y="42" fill="#e7e9ee" font-size="10">LOC: GENEVA_NEUROPHOTONICS_LAB</text>
+    <text x="292" y="58" fill="#8a909c" font-size="10">ERA: 2024_03_14_1620_UTC</text>
+    <text x="292" y="74" fill="#5b9279" font-size="10">Well: 57.7 k_BT · Ret: 99.7%</text>
+
+    <rect x="560" y="0" width="262" height="86" rx="3" fill="#07080a" stroke="rgba(255,255,255,0.1)"/>
+    <text x="572" y="22" fill="#5a8ca8" font-size="11" font-weight="600">E02 · LAKE_GENEVA_RAIN</text>
+    <text x="572" y="42" fill="#e7e9ee" font-size="10">LOC: QUAI_DU_MONT_BLANC</text>
+    <text x="572" y="58" fill="#8a909c" font-size="10">ERA: 2025_11_02_1945_UTC</text>
+    <text x="572" y="74" fill="#5b9279" font-size="10">Well: 57.7 k_BT · Ret: 99.6%</text>
+
+    <rect x="840" y="0" width="262" height="86" rx="3" fill="#07080a" stroke="rgba(255,255,255,0.1)"/>
+    <text x="852" y="22" fill="#5a8ca8" font-size="11" font-weight="600">E03 · ETH_LECTURE_HALL</text>
+    <text x="852" y="42" fill="#e7e9ee" font-size="10">LOC: ETH_ZURICH_HG_F30</text>
+    <text x="852" y="58" fill="#8a909c" font-size="10">ERA: 2023_09_18_1015_UTC</text>
+    <text x="852" y="74" fill="#5b9279" font-size="10">Well: 57.7 k_BT · Ret: 99.7%</text>
+
+    <rect x="0" y="102" width="262" height="86" rx="3" fill="#07080a" stroke="rgba(255,255,255,0.1)"/>
+    <text x="12" y="124" fill="#8170b5" font-size="11" font-weight="600">E04 · DAUGHTER_CELLO_RECITAL</text>
+    <text x="12" y="144" fill="#e7e9ee" font-size="10">LOC: TONHALLE_KLEINER_SAAL</text>
+    <text x="12" y="160" fill="#8a909c" font-size="10">ERA: 2022_12_19_2000_UTC</text>
+    <text x="12" y="176" fill="#5b9279" font-size="10">Well: 57.7 k_BT · Ret: 99.6%</text>
+
+    <rect x="280" y="102" width="262" height="86" rx="3" fill="#07080a" stroke="rgba(255,255,255,0.1)"/>
+    <text x="292" y="124" fill="#8170b5" font-size="11" font-weight="600">E05 · JUNGFRAUJOCH_OBSERVATORY</text>
+    <text x="292" y="144" fill="#e7e9ee" font-size="10">LOC: SPHINX_3571M_ALPS</text>
+    <text x="292" y="160" fill="#8a909c" font-size="10">ERA: 2021_08_11_0310_UTC</text>
+    <text x="292" y="176" fill="#5b9279" font-size="10">Well: 57.7 k_BT · Ret: 99.6%</text>
+
+    <rect x="560" y="102" width="262" height="86" rx="3" fill="#07080a" stroke="rgba(255,255,255,0.1)"/>
+    <text x="572" y="124" fill="#8170b5" font-size="11" font-weight="600">E06 · IBM1_ARRAY_BOOT</text>
+    <text x="572" y="144" fill="#e7e9ee" font-size="10">LOC: RUSCHLIKON_BUNKER_R12</text>
+    <text x="572" y="160" fill="#8a909c" font-size="10">ERA: 2026_05_09_0442_UTC</text>
+    <text x="572" y="176" fill="#5b9279" font-size="10">Well: 57.7 k_BT · Ret: 99.7%</text>
+
+    <rect x="840" y="102" width="262" height="86" rx="3" fill="#07080a" stroke="rgba(255,255,255,0.1)"/>
+    <text x="852" y="124" fill="#8170b5" font-size="11" font-weight="600">E07 · FINAL_CONSENT_LOG</text>
+    <text x="852" y="144" fill="#e7e9ee" font-size="10">LOC: SUB_LEVEL_4_ANTECHAMBER</text>
+    <text x="852" y="160" fill="#8a909c" font-size="10">ERA: 2026_10_24_2315_UTC</text>
+    <text x="852" y="176" fill="#5b9279" font-size="10">Well: 57.7 k_BT · Ret: 99.7%</text>
+  </g>
+</svg>
