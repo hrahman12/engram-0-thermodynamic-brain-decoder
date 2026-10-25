@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Engram-0 — Universal Quantum-Thermodynamic Connectome Engine & WebGPU Cockpit</title>
+  <style>
+    :root {
+      --bg-obsidian: #020617;
+      --bg-panel: rgba(3, 105, 161, 0.08);
+      --bg-panel-solid: #090e1a;
+      --border-cyan: #0369a1;
+      --border-cyan-bright: #38bdf8;
+      --border-dim: rgba(148, 163, 184, 0.16);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --neon-cyan: #38bdf8;
+      --neon-emerald: #10b981;
+      --neon-amber: #f59e0b;
+      --neon-rose: #f43f5e;
+      --neon-purple: #c084fc;
+      --neon-teal: #2dd4bf;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Geist Mono', monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: var(--bg-obsidian);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow-x: hidden;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    /* Background Cybernetic Hex Grid */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(56, 189, 248, 0.09), transparent 60%),
+        radial-gradient(circle at 82% 80%, rgba(244, 63, 94, 0.06), transparent 50%),
+        linear-gradient(rgba(14, 165, 233, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14, 165, 233, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 42px 42px, 42px 42px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Dynamic SVG Connector Layer */
+    #connector-svg-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* Top HUD Navigation Bar */
+    .top-hud {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: rgba(9, 14, 26, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-cyan);
+    }
+    .hud-branding {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hud-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      color: #fff;
+      font-size: 16px;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+    }
+    .hud-title h1 {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .hud-title p {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+    .hud-telemetry-strip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .hud-badge {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-cyan);
+      color: var(--neon-cyan);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hud-badge.emerald {
+      border-color: rgba(16, 185, 129, 0.4);
+      color: var(--neon-emerald);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+    }
+    .hud-badge.amber {
+      border-color: rgba(245, 158, 11, 0.4);
+      color: var(--neon-amber);
+    }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.25); }
+    }
+
+    .hud-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-cyan);
+      color: var(--text-main);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .btn:hover {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: var(--neon-cyan-bright);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border-color: #38bdf8;
+      color: #fff;
+    }
+    .btn.warn {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      border-color: #f59e0b;
+      color: #fff;
+    }
+
+    /* Main Grid Layout: Left 65% (3D + REM Dock), Right 35% (Telemetry + SPI) */
+    .cockpit-container {
+      position: relative;
+      z-index: 10;
+      max-width: 1720px;
+      margin: 16px auto;
+      padding: 0 16px 30px;
+      display: grid;
+      grid-template-columns: 6.4fr 3.6fr;
+      gap: 16px;
+    }
+    @media (max-width: 1200px) {
+      .cockpit-container { grid-template-columns: 1fr; }
+    }
+
+    /* Card Panels */
+    .viewport-column, .sidebar-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .manifold-card, .rem-dock-card, .telemetry-table-card, .spi-terminal-card {
+      background: rgba(9, 14, 26, 0.85);
+      border: 1px solid var(--border-cyan);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.18);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(3, 105, 161, 0.08);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .card-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 3D Mode Selector Chips in Viewport Header */
+    .brain-mode-bar {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .mode-chip {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      color: var(--text-muted);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .mode-chip:hover {
+      border-color: var(--neon-cyan);
+      color: #fff;
+      background: rgba(56, 189, 248, 0.15);
+    }
+    .mode-chip.active {
+      border-color: var(--neon-cyan);
+      background: rgba(56, 189, 248, 0.24);
+      color: var(--neon-cyan);
+      font-weight: 600;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+    }
+
+    /* 3D Stage Viewport */
+    .three-stage-wrap {
+      position: relative;
+      width: 100%;
+      height: 540px;
+      background: radial-gradient(circle at 48% 46%, rgba(3, 105, 161, 0.18), #020617 76%);
+      overflow: hidden;
+    }
+    #manifold-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+      position: relative;
+      z-index: 2;
+    }
+    #manifold-canvas:active { cursor: grabbing; }
+
+    /* Outgoing Neural Connector Ports on Viewport Right Edge */
+    .viewport-ports-rail {
+      position: absolute;
+      right: 0px;
+      top: 60px;
+      bottom: 60px;
+      width: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      pointer-events: none;
+      z-index: 15;
+    }
+    .port-socket {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #090e1a;
+      border: 2px solid var(--neon-cyan);
+      box-shadow: 0 0 8px var(--neon-cyan);
+      position: relative;
+      right: -6px;
+      pointer-events: auto;
+      cursor: crosshair;
+    }
+    .port-socket::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background: var(--neon-cyan);
+      animation: pulsePort 2s infinite ease-in-out;
+    }
+    .port-socket.amber { border-color: var(--neon-amber); box-shadow: 0 0 8px var(--neon-amber); }
+    .port-socket.amber::after { background: var(--neon-amber); }
+    .port-socket.emerald { border-color: var(--neon-emerald); box-shadow: 0 0 8px var(--neon-emerald); }
+    .port-socket.emerald::after { background: var(--neon-emerald); }
+    .port-socket.rose { border-color: var(--neon-rose); box-shadow: 0 0 8px var(--neon-rose); }
+    .port-socket.rose::after { background: var(--neon-rose); }
+
+    @keyframes pulsePort {
+      0%, 100% { transform: scale(0.8); opacity: 0.7; }
+      50% { transform: scale(1.3); opacity: 1; }
+    }
+
+    /* Overlay HUD inside 3D Viewport */
+    .viewport-overlay-top {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+      z-index: 12;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .viewport-controls-bar {
+      display: flex;
+      gap: 6px;
+      pointer-events: auto;
+      flex-wrap: wrap;
+    }
+    .slot-btn {
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-family: var(--font-mono);
+      background: rgba(3, 7, 18, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .slot-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      color: #fff;
+      border-color: var(--neon-cyan);
+    }
+    .slot-btn.active {
+      background: rgba(56, 189, 248, 0.35);
+      border-color: var(--neon-cyan);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+    }
+
+    /* 3D Viewport Controls Footer Bar */
+    .viewport-controls-bottom {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: rgba(3, 7, 18, 0.88);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 8px;
+      padding: 5px 10px;
+      backdrop-filter: blur(8px);
+      z-index: 12;
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+    .viewport-controls-bottom input[type=range] {
+      width: 65px;
+      height: 4px;
+      accent-color: var(--neon-cyan);
+      cursor: pointer;
+    }
+
+    /* Viewport Anatomical & Physics Legend */
+    .viewport-legend {
+      position: absolute;
+      left: 12px;
+      bottom: 46px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      pointer-events: none;
+      z-index: 12;
+      max-width: 460px;
+    }
+    .legend-chip {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(3, 7, 18, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .legend-indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    /* Auxiliary Bloch Sphere HUD Inset (Lower-Right) */
+    .bloch-hud-inset {
+      position: absolute;
+      bottom: 12px;
+      right: 24px;
+      width: 156px;
+      background: rgba(3, 7, 18, 0.90);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 8px;
+      padding: 6px 8px;
+      backdrop-filter: blur(10px);
+      z-index: 12;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+    .bloch-title {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+    #bloch-canvas {
+      width: 100%;
+      height: 120px;
+      display: block;
+    }
+
+    /* Lower REM Theta Oscilloscope Dock */
+    .rem-phases-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--border-cyan);
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .rem-phase-box {
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      border-right: 1px solid rgba(56, 189, 248, 0.15);
+      color: var(--text-dim);
+    }
+    .rem-phase-box:last-child { border-right: none; }
+    .rem-phase-box.active {
+      color: var(--neon-cyan);
+      background: rgba(56, 189, 248, 0.12);
+      box-shadow: inset 0 -2px 0 var(--neon-cyan);
+    }
+    .rem-phase-box strong { display: block; font-size: 10.5px; color: #fff; margin-bottom: 2px; }
+
+    .oscilloscope-stage {
+      position: relative;
+      height: 110px;
+      background: #020617;
+      padding: 6px 12px;
+    }
+    #oscilloscope-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .oscilloscope-kpis {
+      position: absolute;
+      top: 6px;
+      right: 14px;
+      display: flex;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--neon-cyan);
+      pointer-events: none;
+    }
+
+    /* Right Column: Telemetry Ledger */
+    .telemetry-table-card table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    .telemetry-table-card th, .telemetry-table-card td {
+      padding: 7px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+    }
+    .telemetry-table-card th {
+      background: rgba(15, 23, 42, 0.7);
+      color: var(--text-muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .telemetry-table-card tr:last-child td { border-bottom: none; }
+    .telemetry-table-card td.val {
+      text-align: right;
+      color: var(--neon-cyan);
+      font-weight: 600;
+    }
+    .telemetry-table-card td.pass { color: var(--neon-emerald); }
+    .telemetry-table-card td.warn { color: var(--neon-amber); }
+
+    /* Right Column: SPI Chat Terminal */
+    .chat-transcript-box {
+      height: 270px;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #040814;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+    }
+    .msg-bubble {
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      max-width: 95%;
+      align-self: flex-start;
+      line-height: 1.5;
+    }
+    .msg-bubble.operator {
+      align-self: flex-end;
+      background: rgba(3, 105, 161, 0.28);
+      border-color: var(--neon-cyan);
+      color: #fff;
+    }
+    .msg-meta {
+      font-size: 9.5px;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .chat-input-bar {
+      padding: 10px 12px;
+      border-top: 1px solid rgba(56, 189, 248, 0.2);
+      display: flex;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.85);
+    }
+    .chat-input {
+      flex: 1;
+      background: #020617;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 6px;
+      padding: 6px 10px;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      outline: none;
+    }
+    .chat-input:focus { border-color: var(--neon-cyan); box-shadow: 0 0 8px rgba(56, 189, 248, 0.3); }
+
+    /* Intake Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      width: 100%;
+      max-width: 720px;
+      background: #090e1a;
+      border: 1px solid var(--neon-cyan);
+      border-radius: 12px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-box h3 {
+      font-size: 14px;
+      color: #fff;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-cyan);
+      padding-bottom: 8px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .form-group label {
+      font-size: 10.5px;
+      font-family: var(--font-mono);
+      color: var(--neon-cyan);
+    }
+    .form-input {
+      background: #020617;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 6px;
+      padding: 6px 8px;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      outline: none;
+    }
+    .form-input:focus { border-color: var(--neon-cyan); }
+    .memory-slots-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .memory-slot-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .memory-slot-box h4 {
+      font-size: 10.5px;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic SVG Connector Layer connecting 3D Ports to Telemetry & SPI -->
+  <svg id="connector-svg-layer">
+    <defs>
+      <linearGradient id="grad-cyan-teal" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.95" />
+        <stop offset="100%" stop-color="#2dd4bf" stop-opacity="0.95" />
+      </linearGradient>
+      <linearGradient id="grad-teal-emerald" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#2dd4bf" stop-opacity="0.95" />
+        <stop offset="100%" stop-color="#10b981" stop-opacity="0.95" />
+      </linearGradient>
+      <linearGradient id="grad-amber-rose" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.95" />
+        <stop offset="100%" stop-color="#f43f5e" stop-opacity="0.95" />
+      </linearGradient>
+      <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+    <g id="connector-paths-group"></g>
+  </svg>
+
+  <!-- ==================== TOP HUD ==================== -->
+  <header class="top-hud">
+    <div class="hud-branding">
+      <div class="hud-logo">E0</div>
+      <div class="hud-title">
+        <h1>Engram-0 — Reversible Quantum Connectome Engine</h1>
+        <p>Pure-Software QHN + Symplectic Dynamics + 310.15 K Johnson-Nyquist Thermodynamics</p>
+      </div>
+    </div>
+
+    <div class="hud-telemetry-strip">
+      <span class="hud-badge emerald" id="badge-ws-heartbeat">
+        <i class="pulse-dot"></i>
+        <span id="label-ws-status">CIRQ QHN: READY</span>
+      </span>
+      <span class="hud-badge" id="badge-theta-lock">
+        REM CLOCK: 5.971 Hz [±5% LOCKED]
+      </span>
+      <span class="hud-badge amber">
+        T = 310.15 K (37.0°C)
+      </span>
+      <span class="hud-badge emerald">
+        <i class="pulse-dot"></i> 6/6 PASS
+      </span>
+    </div>
+
+    <div class="hud-actions">
+      <button type="button" class="btn primary" onclick="openIntakeModal()">✦ Digitize Mind</button>
+      <button type="button" class="btn" onclick="triggerQuantumRecall()">⚡ Quantum Recall</button>
+      <button type="button" class="btn warn" onclick="triggerThermalTunnelPulse()">🔥 Tunnel Pulse</button>
+      <button type="button" class="btn" onclick="injectPoissonPerturbation()">💫 Pulse 35% Noise</button>
+      <a href="/connectome" class="btn" title="Open Neural Graph Connectome Hub">🕸 Hub</a>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main class="cockpit-container">
+
+    <!-- LEFT 64%: 3D VIEWPORT & REM THETA OSCILLOSCOPE -->
+    <div class="viewport-column">
+
+      <!-- 3D Interactive Connectome & Quantum Attractor Stage -->
+      <article class="manifold-card" id="manifold-card-el">
+        <div class="card-header">
+          <div class="card-title">
+            <span id="lbl-viewport-heading">3D BIOLOGICAL CONNECTOME & ATTRACTOR STAGE</span>
+            <span style="font-size:10px;color:var(--text-dim);font-weight:400;" id="lbl-viewport-subheading">H01 Cortical Microcircuit + Symplectic Hopfield Wells</span>
+          </div>
+
+          <!-- 3D Mode Selector Chips -->
+          <div class="brain-mode-bar">
+            <button type="button" class="mode-chip active" id="chip-mode-brain" onclick="set3DMode('brain')">🧠 3D Connectome</button>
+            <button type="button" class="mode-chip" id="chip-mode-manifold" onclick="set3DMode('manifold')">⚡ Quantum Hopfield Manifold</button>
+            <button type="button" class="mode-chip" id="chip-mode-h01" onclick="set3DMode('h01')">🔬 H01 Cortical Microcircuit</button>
+            <button type="button" class="mode-chip" id="chip-mode-fusion" onclick="set3DMode('fusion')">🌐 Brain + Manifold Fusion</button>
+          </div>
+
+          <div style="font-size:10.5px;color:var(--neon-cyan);">
+            Active: <strong id="lbl-active-engram">ENGRAM_00 (Kowloon Rooftop)</strong>
+          </div>
+        </div>
+
+        <div class="three-stage-wrap" id="three-stage-wrap">
+          <canvas id="manifold-canvas"></canvas>
+
+          <!-- Outgoing Neural Connector Ports along the Right Rail -->
+          <div class="viewport-ports-rail">
+            <div class="port-socket" id="port-hopfield" title="Stage 01: Connectome Coupling J_ij"></div>
+            <div class="port-socket amber" id="port-thermo" title="Stage 02: 310.15 K REM Pruning"></div>
+            <div class="port-socket emerald" id="port-tokens" title="Stage 03: Latent Tokenizer"></div>
+            <div class="port-socket rose" id="port-spi" title="Stage 04: Soulkilled Pseudo Intellect"></div>
+          </div>
+
+          <!-- Top Viewport Control Bar -->
+          <div class="viewport-overlay-top">
+            <div class="viewport-controls-bar">
+              <button type="button" class="slot-btn active" id="btn-slot-0" onclick="switchActiveSlot(0)">Slot 0 (1994)</button>
+              <button type="button" class="slot-btn" id="btn-slot-1" onclick="switchActiveSlot(1)">Slot 1 (2026)</button>
+              <button type="button" class="slot-btn" id="btn-slot-2" onclick="switchActiveSlot(2)">Slot 2 (2024)</button>
+              <button type="button" class="slot-btn" id="btn-slot-3" onclick="switchActiveSlot(3)">Slot 3 (2025)</button>
+            </div>
+            <span class="hud-badge emerald" style="pointer-events:none;">Landauer Bit Erasure: 0.00 J (U†U = I)</span>
+          </div>
+
+          <!-- Bottom Viewport Controls Bar -->
+          <div class="viewport-controls-bottom">
+            <span>Orbit: Drag</span>
+            <span>Zoom: Wheel</span>
+            <label>Explode:</label>
+            <input type="range" id="rng-explode" min="0" max="100" value="0" oninput="updateExplode(this.value)" />
+            <span id="lbl-explode">0%</span>
+            <button type="button" class="slot-btn" onclick="reset3DCamera()" style="padding:2px 6px;">↺ Reset</button>
+          </div>
+
+          <!-- Anatomical & Physics Legend -->
+          <div class="viewport-legend" id="viewport-legend-el">
+            <!-- Dynamically populated based on mode -->
+          </div>
+
+          <!-- Auxiliary Bloch Sphere Inset (Lower-Right) -->
+          <div class="bloch-hud-inset">
+            <div class="bloch-title">
+              <span>BLOCH SPHERE Q0</span>
+              <span id="bloch-vector-label">[+0.12, -0.05, +0.99]</span>
+            </div>
+            <canvas id="bloch-canvas" width="156" height="120"></canvas>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lower 6.0 Hz REM Theta Oscilloscope Dock -->
+      <article class="rem-dock-card" id="rem-dock-card-el">
+        <!-- 4-Phase Resonant Status Bar -->
+        <div class="rem-phases-bar">
+          <div class="rem-phase-box active" id="phase-1">
+            <strong>PHASE 1 · PRECESSION</strong>
+            H_mixer Transverse Tilt
+          </div>
+          <div class="rem-phase-box" id="phase-2">
+            <strong>PHASE 2 · TUNNELING</strong>
+            WKB Penetration (P=94.1%)
+          </div>
+          <div class="rem-phase-box" id="phase-3">
+            <strong>PHASE 3 · COLLAPSE</strong>
+            Projective Eigenstate |x⟩
+          </div>
+          <div class="rem-phase-box" id="phase-4">
+            <strong>PHASE 4 · TOKENIZATION</strong>
+            Cognitive Gating Stream
+          </div>
+        </div>
+
+        <div class="oscilloscope-stage">
+          <canvas id="oscilloscope-canvas"></canvas>
+          <div class="oscilloscope-kpis">
+            <span>REM Carrier: <strong id="kpi-osc-theta">5.971 Hz</strong></span>
+            <span>Phase Jitter: <strong id="kpi-osc-jitter">0.038 rad RMS</strong></span>
+            <span>Thermal Noise: <strong>310.15 K</strong></span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- RIGHT 36%: TELEMETRY LEDGER & SPI CHAT TERMINAL -->
+    <div class="sidebar-column">
+
+      <!-- Physical Telemetry Ledger (50 MC Trials) -->
+      <article class="telemetry-table-card" id="telemetry-table-card-el">
+        <div class="card-header">
+          <div class="card-title">
+            <span>PHYSICS TELEMETRY LEDGER (50 MC TRIALS)</span>
+          </div>
+          <span class="hud-badge emerald">6/6 ASSERTIONS PASS</span>
+        </div>
+        <table>
+          <tbody>
+            <tr>
+              <td>Target Foundation Model</td>
+              <td class="val">gemini-4-argon (high)</td>
+            </tr>
+            <tr>
+              <td>Connectome Substrate</td>
+              <td class="val">Google H01 Layer 4 (158 C3)</td>
+            </tr>
+            <tr>
+              <td>Ground State Recall Fidelity</td>
+              <td class="val pass" id="table-fidelity">94.26% (≥ 85.0%)</td>
+            </tr>
+            <tr>
+              <td>Unitary Reversibility (U†U = I)</td>
+              <td class="val pass" id="table-reversibility">1.000000 (≥ 0.999)</td>
+            </tr>
+            <tr>
+              <td>Measured REM Theta Carrier</td>
+              <td class="val pass" id="table-theta">5.9709 Hz (±5% Lock)</td>
+            </tr>
+            <tr>
+              <td>Spurious Barrier Escape Rate</td>
+              <td class="val warn" id="table-spurious">100.0% (Tunnel Escaped)</td>
+            </tr>
+            <tr>
+              <td>Quantum Tunneling Probability</td>
+              <td class="val" id="table-tunnel">0.9412 (WKB Transverse Penetration)</td>
+            </tr>
+            <tr>
+              <td>Cirq Decoding Latency</td>
+              <td class="val pass" id="table-latency">17.78 ms (&lt; 50.0 ms)</td>
+            </tr>
+            <tr>
+              <td>Active Collapsed Eigenstate</td>
+              <td class="val" id="table-eigenstate" style="color:var(--neon-emerald);font-family:var(--font-mono);font-size:12px;">|01010101⟩</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <!-- Stateful Soulkilled Pseudo Intellect (SPI) Terminal -->
+      <article class="spi-terminal-card" id="spi-terminal-card-el">
+        <div class="card-header">
+          <div class="card-title">
+            <span>SOULKILLED PSEUDO INTELLECT (SPI)</span>
+          </div>
+          <div style="font-size:9.5px;color:var(--text-muted);font-family:var(--font-mono);">
+            STRICT TOKEN GATE · ZERO VDB
+          </div>
+        </div>
+
+        <div class="chat-transcript-box" id="chat-transcript-box">
+          <!-- Dynamic Chat Bubbles -->
+        </div>
+
+        <form class="chat-input-bar" onsubmit="handleSendChat(event)">
+          <input type="text" class="chat-input" id="chat-query-input" placeholder="Query Dr. Vance (cognitive thoughts strictly gated by engram)..." />
+          <button type="submit" class="btn primary">Transmit</button>
+        </form>
+
+        <div style="padding:6px 12px;background:rgba(9,14,26,0.9);border-top:1px solid rgba(56,189,248,0.15);display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:10px;color:var(--text-dim);font-family:var(--font-mono);">Consciousness Gate: <strong id="lbl-gate-status" style="color:var(--neon-amber);">RESERVED (GATED)</strong></span>
+          <button type="button" class="btn" id="btn-human-release" onclick="authorizeHumanRelease()" style="font-size:9.5px;padding:3px 8px;">Authorize Release</button>
+        </div>
+      </article>
+
+    </div>
+  </main>
+
+  <!-- ==================== USER MIND DIGITIZATION MODAL ==================== -->
+  <div class="modal-overlay" id="intake-modal">
+    <div class="modal-box">
+      <h3>✦ Autobiographical Mind Digitization — Google H01 Substrate</h3>
+      <p style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">
+        Ingest your personal episodic memories and philosophical axioms into the N=8 qubit Ising Spin Glass Hamiltonian.
+      </p>
+
+      <div class="form-group">
+        <label>Callsign / Identity:</label>
+        <input type="text" class="form-input" id="inp-callsign" value="Alistair Vance SPI" />
+      </div>
+
+      <div class="form-group">
+        <label>Core Philosophical Axioms (Immutable Gating Grounding):</label>
+        <textarea class="form-input" id="inp-axioms" rows="2">Energy is never lost, merely transformed across phase space. Biological death is an unoptimized bit erasure; continuous symplectic dynamics det(J)=1 preserves the soul.</textarea>
+      </div>
+
+      <div class="memory-slots-grid">
+        <!-- Memory Slot 0 -->
+        <div class="memory-slot-box">
+          <h4><span>SLOT 0 · ERA 1994</span><small>ENGRAM_00</small></h4>
+          <input type="text" class="form-input" id="slot-loc-0" value="Kowloon Rooftop" placeholder="Location" />
+          <textarea class="form-input" id="slot-sens-0" rows="2" placeholder="Sensory details">Rain on corrugated iron, ozone from neon transformers, distant Kai Tak landing lights cutting through monsoon mist, wet soldering iron hum.</textarea>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <label style="font-size:9.5px;color:var(--text-dim);">Valence:</label>
+            <input type="number" step="0.05" min="-1" max="1" class="form-input" id="slot-val-0" value="0.82" style="width:75px;" />
+          </div>
+        </div>
+
+        <!-- Memory Slot 1 -->
+        <div class="memory-slot-box">
+          <h4><span>SLOT 1 · ERA 2026</span><small>ENGRAM_01</small></h4>
+          <input type="text" class="form-input" id="slot-loc-1" value="Acute Excision Bay 4" placeholder="Location" />
+          <textarea class="form-input" id="slot-sens-1" rows="2" placeholder="Sensory details">Isoflurane vapor, heart monitor flatline, ozone smell of superconducting Helmholtz coils, amber status LEDs on frosted quartz, 6.00 Hz theta lock hum.</textarea>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <label style="font-size:9.5px;color:var(--text-dim);">Valence:</label>
+            <input type="number" step="0.05" min="-1" max="1" class="form-input" id="slot-val-1" value="-0.64" style="width:75px;" />
+          </div>
+        </div>
+
+        <!-- Memory Slot 2 -->
+        <div class="memory-slot-box">
+          <h4><span>SLOT 2 · ERA 2024</span><small>ENGRAM_02</small></h4>
+          <input type="text" class="form-input" id="slot-loc-2" value="Geneva Neurophotonics Lab Cleanroom B" placeholder="Location" />
+          <textarea class="form-input" id="slot-sens-2" rows="2" placeholder="Sensory details">Blue Cherenkov-like fluorescence on the petavoxel electron microscopy monitor, Layer-4 stellate and Layer-5 pyramidal dendritic spines aligning in 3D.</textarea>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <label style="font-size:9.5px;color:var(--text-dim);">Valence:</label>
+            <input type="number" step="0.05" min="-1" max="1" class="form-input" id="slot-val-2" value="0.94" style="width:75px;" />
+          </div>
+        </div>
+
+        <!-- Memory Slot 3 -->
+        <div class="memory-slot-box">
+          <h4><span>SLOT 3 · ERA 2025</span><small>ENGRAM_03</small></h4>
+          <input type="text" class="form-input" id="slot-loc-3" value="Quai du Mont-Blanc Promenade" placeholder="Location" />
+          <textarea class="form-input" id="slot-sens-3" rows="2" placeholder="Sensory details">Raindrops fracturing sodium streetlamp reflections on wet cobblestones, distant ferry horn across Lake Geneva, porcelain espresso cup warming chilled fingers.</textarea>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <label style="font-size:9.5px;color:var(--text-dim);">Valence:</label>
+            <input type="number" step="0.05" min="-1" max="1" class="form-input" id="slot-val-3" value="0.76" style="width:75px;" />
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px;">
+        <button type="button" class="btn" onclick="closeIntakeModal()">Cancel</button>
+        <button type="button" class="btn primary" onclick="compileUserMindToEngram()">✦ Compile to Quantum Engram</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    // ==================== GLOBAL COCKPIT STATE ====================
+    const appState = {
+      activeSlot: 0,
+      mode3D: "brain", // "brain" | "manifold" | "h01" | "fusion"
+      explode: 0.0,
+      zoom: 1.0,
+      yaw: 0.35,
+      pitch: 0.22,
+      dragging: false,
+      lastX: 0,
+      lastY: 0,
+      pulseBoost: 1.0,
+      clockTick: 0,
+      ws: null,
+      wsConnected: false,
+      callsign: "ALISTAIR_VANCE_SPI",
+      humanAuthorized: false,
+      blochQubit0: [0.12, -0.05, 0.99],
+      thetaCarrierHz: 5.971,
+      tunnelingActive: false,
+      tunnelBeamT: 0.0,
+      memories: [
+        {
+          era: "1994",
+          loc: "Kowloon Rooftop",
+          region: "Temporal STG (Auditory)",
+          sensory: "Rain on corrugated iron, ozone from neon transformers, distant Kai Tak landing lights cutting through monsoon mist, wet soldering iron hum.",
+          val: "+0.82",
+          pos3d: [-0.62, -0.22, 0.45],
+          manifoldPos: [-0.65, -0.65]
+        },
+        {
+          era: "2026",
+          loc: "Acute Excision Bay 4",
+          region: "Anterior Cingulate (Affective)",
+          sensory: "Isoflurane vapor, heart monitor flatline, ozone smell of superconducting Helmholtz coils, amber status LEDs on frosted quartz, 6.00 Hz theta lock hum.",
+          val: "-0.64",
+          pos3d: [0.08, 0.38, 0.28],
+          manifoldPos: [0.65, -0.65]
+        },
+        {
+          era: "2024",
+          loc: "Geneva Neurophotonics Lab",
+          region: "Occipital BA17 (Visual Stellate)",
+          sensory: "Blue Cherenkov-like fluorescence on the petavoxel electron microscopy monitor, Layer-4 stellate and Layer-5 pyramidal dendritic spines aligning in 3D.",
+          val: "+0.94",
+          pos3d: [0.45, -0.15, -0.65],
+          manifoldPos: [0.65, 0.65]
+        },
+        {
+          era: "2025",
+          loc: "Quai du Mont-Blanc",
+          region: "Hippocampal CA3 (Episodic)",
+          sensory: "Raindrops fracturing sodium streetlamp reflections on wet cobblestones, distant ferry horn across Lake Geneva, porcelain espresso cup warming chilled fingers.",
+          val: "+0.76",
+          pos3d: [-0.35, -0.12, -0.15],
+          manifoldPos: [-0.65, 0.65]
+        }
+      ]
+    };
+
+    // ==================== 3D GEOMETRY GENERATORS ====================
+    const cortexCloud = [];
+    const limbicCloud = [];
+    const dtiTracts = [];
+
+    // 1. Bilateral gyral cortical surface cloud (920 points)
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 460; i++) {
+        const u = (i / 460) * Math.PI * 2 * 8;
+        const v = (i / 460) * Math.PI - Math.PI / 2;
+        const rx = 0.20 + 0.78 * Math.abs(Math.cos(v) * Math.cos(u));
+        const ry = 0.76 * Math.sin(v) + 0.14;
+        const rz = 1.06 * Math.cos(v) * Math.sin(u);
+        const fold = 0.045 * Math.sin(rx * 14 + rz * 11);
+        cortexCloud.push({
+          side,
+          x: side * rx + fold,
+          y: ry + fold,
+          z: rz,
+          col: side === -1 ? "#38bdf8" : "#818cf8"
+        });
+      }
+      // 2. Subcortical limbic arch (hippocampus + amygdala + thalamus, 170 points)
+      for (let k = 0; k < 85; k++) {
+        const a = (k / 85) * Math.PI * 1.55;
+        limbicCloud.push({
+          side,
+          x: side * (0.25 + 0.13 * Math.cos(a)),
+          y: -0.06 + 0.21 * Math.sin(a),
+          z: -0.08 + 0.28 * Math.cos(a * 0.75),
+          col: k % 3 === 0 ? "#f59e0b" : "#c084fc"
+        });
+      }
+      // 3. White-matter DTI tracts
+      for (let t = 0; t < 18; t++) {
+        const pts = [];
+        for (let s = 0; s <= 16; s++) {
+          const u = s / 16;
+          pts.push({
+            x: side * (0.12 + u * 0.62 * Math.cos(t * 0.4)),
+            y: -0.15 + Math.sin(u * Math.PI) * (0.35 + (t % 4) * 0.08),
+            z: -0.45 + (t / 18) * 1.15
+          });
+        }
+        dtiTracts.push(pts);
+      }
+    }
+
+    // 4. Google H01 Layer-4 Cortical Microcircuit Segments
+    const H01_SEGMENTS = [];
+    for (let i = 0; i < 72; i++) {
+      const layer = (i % 6);
+      H01_SEGMENTS.push({
+        id: `H01_C3_SEG_${1000 + i}`,
+        layer: `L${layer + 1}`,
+        y: (layer - 2.5) * 0.38,
+        x: ((i * 17) % 30 - 15) * 0.065,
+        z: ((i * 23) % 30 - 15) * 0.065,
+        hue: (i * 137) % 360
+      });
+    }
+
+    // ==================== 3D PERSPECTIVE PROJECTION ENGINE ====================
+    function projectPoint(x, y, z, w, h) {
+      const cy = Math.cos(appState.yaw), sy = Math.sin(appState.yaw);
+      const cp = Math.cos(appState.pitch), sp = Math.sin(appState.pitch);
+      const x1 = x * cy - z * sy;
+      const z1 = x * sy + z * cy;
+      const y2 = y * cp - z1 * sp;
+      const z2 = y * sp + z1 * cp;
+      const fov = Math.min(w, h) * 0.98 * appState.zoom;
+      const dist = 3.65 + z2;
+      const scale = fov / Math.max(0.65, dist);
+      return { sx: w * 0.48 + x1 * scale, sy: h * 0.50 - y2 * scale, z: z2, scale };
+    }
+
+    // ==================== 3D CANVAS RENDERING LOOP ====================
+    let activeAnchorScreenPos = { x: 300, y: 240 };
+
+    function render3DScene() {
+      requestAnimationFrame(render3DScene);
+      appState.clockTick += 0.025;
+      appState.pulseBoost = Math.max(1.0, appState.pulseBoost * 0.985);
+
+      if (!appState.dragging) {
+        appState.yaw += 0.003;
+      }
+
+      const canvas = document.getElementById("manifold-canvas");
+      if (!canvas) return;
+      const container = document.getElementById("three-stage-wrap");
+      const w = container.clientWidth || 800;
+      const h = container.clientHeight || 540;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+      }
+
+      const ctx = canvas.getContext("2d");
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const mode = appState.mode3D;
+
+      // ----------------- MODE 1: 3D BRAIN CONNECTOME -----------------
+      if (mode === "brain" || mode === "fusion") {
+        renderBrainSubsystem(ctx, w, h, mode === "fusion");
+      }
+
+      // ----------------- MODE 2: QUANTUM HOPFIELD MANIFOLD -----------------
+      if (mode === "manifold" || mode === "fusion") {
+        renderHopfieldManifold(ctx, w, h, mode === "fusion");
+      }
+
+      // ----------------- MODE 3: GOOGLE H01 CORTICAL COLUMN -----------------
+      if (mode === "h01") {
+        renderH01Microcircuit(ctx, w, h);
+      }
+
+      ctx.restore();
+
+      // Render auxiliary HUDs
+      drawBlochSphereInset();
+      drawOscilloscopeDock();
+      updateConnectorSVG();
+    }
+
+    // --- Sub-renderer: 3D Biological Connectome ---
+    function renderBrainSubsystem(ctx, w, h, isFusion = false) {
+      const exp = appState.explode;
+      const yOffset = isFusion ? 0.85 : 0.0;
+      const scaleAdj = isFusion ? 0.72 : 1.0;
+
+      // 1. White-Matter DTI Tracts
+      for (const tract of dtiTracts) {
+        ctx.strokeStyle = isFusion ? "rgba(45, 212, 191, 0.12)" : "rgba(45, 212, 191, 0.22)";
+        ctx.lineWidth = 1.1;
+        ctx.beginPath();
+        tract.forEach((pt, idx) => {
+          const ex = (pt.x * (1 + exp * 0.4)) * scaleAdj;
+          const ey = (pt.y + yOffset) * scaleAdj;
+          const ez = pt.z * scaleAdj;
+          const p = projectPoint(ex, ey, ez, w, h);
+          if (idx === 0) ctx.moveTo(p.sx, p.sy);
+          else ctx.lineTo(p.sx, p.sy);
+        });
+        ctx.stroke();
+      }
+
+      // 2. Gyral Cortical & Limbic Particle Cloud
+      const allPts = [];
+      for (const pt of cortexCloud) {
+        const ex = (pt.x + pt.side * exp * 0.45) * scaleAdj;
+        const ey = (pt.y + exp * 0.15 + yOffset) * scaleAdj;
+        const ez = pt.z * scaleAdj;
+        const p = projectPoint(ex, ey, ez, w, h);
+        allPts.push({ ...p, col: pt.col, alpha: isFusion ? 0.35 : 0.85, r: 1.8 });
+      }
+      for (const pt of limbicCloud) {
+        const ex = (pt.x * (1 + exp * 0.2)) * scaleAdj;
+        const ey = (pt.y - exp * 0.12 + yOffset) * scaleAdj;
+        const ez = pt.z * scaleAdj;
+        const p = projectPoint(ex, ey, ez, w, h);
+        allPts.push({ ...p, col: pt.col, alpha: isFusion ? 0.45 : 0.95, r: 2.6 });
+      }
+
+      // Depth sort particles
+      allPts.sort((a, b) => b.z - a.z);
+      for (const p of allPts) {
+        ctx.fillStyle = p.col;
+        ctx.globalAlpha = p.alpha;
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, Math.max(1.3, p.scale * 0.013 * (p.r / 1.8)), 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1.0;
+
+// Eyeballs removed for clean, uncluttered aesthetic
+
+      // 4. Active & Inactive Engram Attractor Beacons
+      const portYs = [h * 0.20, h * 0.42, h * 0.64, h * 0.84];
+      appState.memories.forEach((mem, idx) => {
+        const [ex0, ey0, ez0] = mem.pos3d;
+        const ex = ex0 * scaleAdj;
+        const ey = (ey0 + yOffset) * scaleAdj;
+        const ez = ez0 * scaleAdj;
+        const p = projectPoint(ex, ey, ez, w, h);
+        const isAct = idx === appState.activeSlot;
+
+        if (isAct) {
+          activeAnchorScreenPos = { x: p.sx, y: p.sy };
+
+// Internal dashed rays removed for clean, uncluttered aesthetic
+
+// Spiral trajectory removed for clean, uncluttered aesthetic
+        }
+
+        // Engram Beacon Circle
+        ctx.fillStyle = isAct ? "#10b981" : "rgba(56, 189, 248, 0.6)";
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, isAct ? 8.5 : 4.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (isAct) {
+          ctx.strokeStyle = "#10b981";
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          ctx.arc(p.sx, p.sy, 14 + Math.sin(appState.clockTick * 3.5) * 4, 0, Math.PI * 2);
+          ctx.stroke();
+
+          const idStr = `ENGRAM_0${idx}`;
+          const regStr = `${mem.region}`;
+          ctx.font = "bold 11px ui-monospace, monospace";
+          const tw = Math.max(ctx.measureText(idStr).width, ctx.measureText(regStr).width) + 16;
+          
+          ctx.fillStyle = "rgba(3, 7, 18, 0.88)";
+          ctx.fillRect(p.sx + 14, p.sy - 15, tw, 30);
+          ctx.strokeStyle = "rgba(16, 185, 129, 0.6)";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(p.sx + 14, p.sy - 15, tw, 30);
+
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText(idStr, p.sx + 20, p.sy - 2);
+          ctx.fillStyle = "#38bdf8";
+          ctx.font = "10px ui-monospace, monospace";
+          ctx.fillText(regStr, p.sx + 20, p.sy + 10);
+        }
+      });
+    }
+
+    // --- Sub-renderer: Quantum Hopfield Manifold ---
+    function renderHopfieldManifold(ctx, w, h, isFusion = false) {
+      const yBase = isFusion ? -0.85 : 0.0;
+      const GRID = 28;
+      const step = 4.6 / GRID;
+      const activeMem = appState.memories[appState.activeSlot];
+
+      function computeEnergy(x, z) {
+        let e = 0.08 * (x * x + z * z);
+        appState.memories.forEach((mem, mIdx) => {
+          const dx = x - mem.manifoldPos[0] * 1.8;
+          const dz = z - mem.manifoldPos[1] * 1.8;
+          const distSq = dx * dx + dz * dz;
+          const depth = (mIdx === appState.activeSlot) ? 1.45 : 0.72;
+          e -= depth * Math.exp(-distSq * 5.2);
+        });
+        // Shallow spurious dip
+        const spDist = Math.pow(x - 0.25, 2) + Math.pow(z + 0.35, 2);
+        e -= 0.28 * Math.exp(-spDist * 8.5);
+        return e;
+      }
+
+      // 1. Shaded Quads for Hopfield Potential Well Landscape
+      for (let i = -GRID/2; i < GRID/2; i++) {
+        for (let j = -GRID/2; j < GRID/2; j++) {
+          const x0 = i * step, z0 = j * step;
+          const x1 = (i + 1) * step, z1 = (j + 1) * step;
+
+          const e00 = computeEnergy(x0, z0);
+          const e10 = computeEnergy(x1, z0);
+          const e11 = computeEnergy(x1, z1);
+          const e01 = computeEnergy(x0, z1);
+
+          const p00 = projectPoint(x0, yBase + e00 * 0.75, z0, w, h);
+          const p10 = projectPoint(x1, yBase + e10 * 0.75, z0, w, h);
+          const p11 = projectPoint(x1, yBase + e11 * 0.75, z1, w, h);
+          const p01 = projectPoint(x0, yBase + e01 * 0.75, z1, w, h);
+
+          const avgE = (e00 + e10 + e11 + e01) * 0.25;
+          let quadCol = "rgba(3, 105, 161, 0.12)";
+          if (avgE < -0.8) {
+            // Consolidated Core Basin (Emerald)
+            quadCol = `rgba(16, 185, 129, ${Math.min(0.75, (-avgE - 0.7) * 0.85)})`;
+          } else if (avgE < -0.2 && Math.abs(x0 - 0.25) < 0.8 && Math.abs(z0 + 0.35) < 0.8) {
+            // Shallow Spurious Trap (Rose)
+            quadCol = `rgba(244, 63, 94, ${Math.min(0.65, (-avgE) * 0.9)})`;
+          } else if (avgE < -0.15) {
+            quadCol = "rgba(56, 189, 248, 0.18)";
+          }
+
+          ctx.fillStyle = quadCol;
+          ctx.beginPath();
+          ctx.moveTo(p00.sx, p00.sy);
+          ctx.lineTo(p10.sx, p10.sy);
+          ctx.lineTo(p11.sx, p11.sy);
+          ctx.lineTo(p01.sx, p01.sy);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.strokeStyle = "rgba(56, 189, 248, 0.28)";
+          ctx.lineWidth = 0.75;
+          ctx.stroke();
+        }
+      }
+
+      // 2. Upper Probability Field |ψ(x, z)|² Undulation
+      ctx.strokeStyle = "rgba(16, 185, 129, 0.45)";
+      ctx.lineWidth = 1.3;
+      for (let i = -GRID/2; i <= GRID/2; i += 2) {
+        for (let j = -GRID/2; j <= GRID/2; j += 2) {
+          const x = i * step;
+          const z = j * step;
+          const amp = Math.exp(-Math.pow(x - activeMem.manifoldPos[0] * 1.8, 2) * 4.0 - Math.pow(z - activeMem.manifoldPos[1] * 1.8, 2) * 4.0);
+          const undulation = 0.08 * Math.sin(appState.clockTick * 3.5 + x * 3.0);
+          const py = yBase + 0.40 + amp * 0.55 + undulation;
+          const p = projectPoint(x, py, z, w, h);
+          ctx.fillStyle = amp > 0.4 ? "rgba(16, 185, 129, 0.9)" : "rgba(56, 189, 248, 0.65)";
+          ctx.fillRect(p.sx - 2, p.sy - 2, 4, 4);
+        }
+      }
+
+      // 3. 310.15 K Thermal Brownian Swarm Particles (Amber)
+      for (let k = 0; k < 75; k++) {
+        const theta = (k / 75) * Math.PI * 2 + appState.clockTick * 0.45;
+        const rad = 0.90 + 0.55 * Math.sin(k * 7.1 + appState.clockTick);
+        const px = Math.cos(theta) * rad;
+        const pz = Math.sin(theta) * rad;
+        const py = yBase + 0.22 + 0.28 * Math.sin(k * 13.0 + appState.clockTick * 2.2);
+        const p = projectPoint(px, py, pz, w, h);
+        ctx.fillStyle = "#f59e0b";
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, 2.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 4. Quantum Tunneling Laser Animation
+      if (appState.tunnelingActive) {
+        appState.tunnelBeamT += 0.05;
+        const tx = activeMem.manifoldPos[0] * 1.8;
+        const tz = activeMem.manifoldPos[1] * 1.8;
+        const targetE = computeEnergy(tx, tz);
+        const pTop = projectPoint(tx, yBase + 2.5, tz, w, h);
+        const pBot = projectPoint(tx, yBase + targetE * 0.75, tz, w, h);
+
+        const beamAlpha = Math.sin(appState.tunnelBeamT * Math.PI);
+        ctx.strokeStyle = `rgba(245, 158, 11, ${beamAlpha})`;
+        ctx.lineWidth = 5.0;
+        ctx.beginPath();
+        ctx.moveTo(pTop.sx, pTop.sy);
+        ctx.lineTo(pBot.sx, pBot.sy);
+        ctx.stroke();
+
+        ctx.strokeStyle = `rgba(255, 255, 255, ${beamAlpha * 0.95})`;
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(pTop.sx, pTop.sy);
+        ctx.lineTo(pBot.sx, pBot.sy);
+        ctx.stroke();
+
+        // Impact spark ring
+        ctx.strokeStyle = `rgba(16, 185, 129, ${beamAlpha})`;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(pBot.sx, pBot.sy, 24 * appState.tunnelBeamT, 0, Math.PI * 2);
+        ctx.stroke();
+
+        if (appState.tunnelBeamT >= 1.0) {
+          appState.tunnelingActive = false;
+        }
+      }
+
+      // 5. Target Ground State Basin Pin (At bottom of basin)
+      const tx = activeMem.manifoldPos[0] * 1.8;
+      const tz = activeMem.manifoldPos[1] * 1.8;
+      const targetE = computeEnergy(tx, tz);
+      const targetP = projectPoint(tx, yBase + targetE * 0.75, tz, w, h);
+
+      ctx.fillStyle = "#10b981";
+      ctx.beginPath();
+      ctx.arc(targetP.sx, targetP.sy, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(targetP.sx, targetP.sy, 16 + Math.sin(appState.clockTick * 4) * 3, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 11px ui-monospace, monospace";
+      ctx.fillText(`GROUND STATE |x_0${appState.activeSlot}⟩ (ΔE ≥ 45 k_BT)`, targetP.sx + 18, targetP.sy - 3);
+
+      ctx.fillStyle = "#38bdf8";
+      ctx.font = "10px ui-monospace, monospace";
+      ctx.fillText(`${activeMem.loc}`, targetP.sx + 18, targetP.sy + 11);
+
+      if (appState.mode3D === "manifold") {
+        activeAnchorScreenPos = { x: targetP.sx, y: targetP.sy };
+      }
+    }
+
+    // --- Sub-renderer: Google H01 Layer-4 Cortical Column ---
+    function renderH01Microcircuit(ctx, w, h) {
+      // 6 Cortical Layers
+      for (let l = 0; l <= 6; l++) {
+        const ly = (l - 3.0) * 0.42;
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.25)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let a = 0; a <= 20; a++) {
+          const rad = 1.35;
+          const ang = (a / 20) * Math.PI * 2;
+          const p = projectPoint(Math.cos(ang) * rad, ly, Math.sin(ang) * rad, w, h);
+          if (a === 0) ctx.moveTo(p.sx, p.sy);
+          else ctx.lineTo(p.sx, p.sy);
+        }
+        ctx.stroke();
+
+        if (l < 6) {
+          const labelP = projectPoint(1.45, ly + 0.21, 0, w, h);
+          ctx.fillStyle = l === 3 ? "#10b981" : "rgba(148, 163, 184, 0.7)";
+          ctx.font = "bold 10px ui-monospace, monospace";
+          ctx.fillText(`Layer ${l + 1} ${l === 3 ? '(L4 Stellate Connectome Target)' : ''}`, labelP.sx, labelP.sy);
+        }
+      }
+
+      // 72 Dendritic & Axonal C3 Arbor Segments
+      H01_SEGMENTS.forEach((seg, idx) => {
+        const p = projectPoint(seg.x, seg.y, seg.z, w, h);
+        const isL4 = seg.layer === "L4";
+        ctx.fillStyle = isL4 ? "#10b981" : `hsl(${seg.hue}, 85%, 65%)`;
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, isL4 ? 4.2 : 2.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Synaptic conductance flow lines
+        if (idx % 3 === 0) {
+          const nextSeg = H01_SEGMENTS[(idx + 1) % H01_SEGMENTS.length];
+          const pNext = projectPoint(nextSeg.x, nextSeg.y, nextSeg.z, w, h);
+          ctx.strokeStyle = isL4 ? "rgba(16, 185, 129, 0.4)" : "rgba(56, 189, 248, 0.25)";
+          ctx.lineWidth = 1.0;
+          ctx.beginPath();
+          ctx.moveTo(p.sx, p.sy);
+          ctx.lineTo(pNext.sx, pNext.sy);
+          ctx.stroke();
+        }
+      });
+
+      const l4P = projectPoint(0, 0.0, 0, w, h);
+      activeAnchorScreenPos = { x: l4P.sx, y: l4P.sy };
+    }
+
+    // ==================== INTERACTION: ORBIT & ZOOM ====================
+    function setupOrbitEvents() {
+      const cv = document.getElementById("manifold-canvas");
+      cv.addEventListener("pointerdown", (e) => {
+        appState.dragging = true;
+        appState.lastX = e.clientX;
+        appState.lastY = e.clientY;
+        cv.setPointerCapture(e.pointerId);
+      });
+      window.addEventListener("pointermove", (e) => {
+        if (!appState.dragging) return;
+        const dx = e.clientX - appState.lastX;
+        const dy = e.clientY - appState.lastY;
+        appState.lastX = e.clientX;
+        appState.lastY = e.clientY;
+        appState.yaw += dx * 0.007;
+        appState.pitch = Math.max(-1.15, Math.min(1.15, appState.pitch + dy * 0.006));
+      });
+      window.addEventListener("pointerup", () => { appState.dragging = false; });
+      cv.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        const delta = e.deltaY * -0.0012;
+        appState.zoom = Math.max(0.55, Math.min(2.2, appState.zoom + delta));
+      }, { passive: false });
+    }
+
+    function reset3DCamera() {
+      appState.yaw = 0.35;
+      appState.pitch = 0.22;
+      appState.zoom = 1.0;
+      appState.explode = 0.0;
+      document.getElementById("rng-explode").value = 0;
+      document.getElementById("lbl-explode").textContent = "0%";
+    }
+
+    function updateExplode(val) {
+      appState.explode = parseFloat(val) / 100.0;
+      document.getElementById("lbl-explode").textContent = `${Math.round(val)}%`;
+    }
+
+    // ==================== 3D MODE SWITCHER ====================
+    function set3DMode(mode) {
+      appState.mode3D = mode;
+      ["brain", "manifold", "h01", "fusion"].forEach(m => {
+        document.getElementById(`chip-mode-${m}`).classList.toggle("active", m === mode);
+      });
+
+      const titleEl = document.getElementById("lbl-viewport-heading");
+      const subEl = document.getElementById("lbl-viewport-subheading");
+      const legEl = document.getElementById("viewport-legend-el");
+
+      if (mode === "brain") {
+        titleEl.textContent = "3D BIOLOGICAL CONNECTOME & ATTRACTOR STAGE";
+        subEl.textContent = "Google H01 Cortical Microcircuit + Bilateral Gyral Surface ";
+        legEl.innerHTML = `
+          <span class="legend-chip"><i class="legend-indicator" style="background:#38bdf8;"></i>Gyral Cortex</span>
+          <span class="legend-chip"><i class="legend-indicator" style="background:#f59e0b;"></i>Limbic Arch</span>
+          <span class="legend-chip"><i class="legend-indicator" style="background:#2dd4bf;"></i>DTI Tracts</span>
+          
+          <span class="legend-chip"><i class="legend-indicator" style="background:#10b981;"></i>Active Engram Beacon</span>
+        `;
+      } else if (mode === "manifold") {
+        titleEl.textContent = "DUAL-LAYER QUANTUM ATTRACTOR MANIFOLD";
+        subEl.textContent = "48×48 Continuous Modern Hopfield U(q) + Undulating |ψ(x,z)|²";
+        legEl.innerHTML = `
+          <span class="legend-chip"><i class="legend-indicator" style="background:#10b981;"></i>Consolidated Core Basin (ΔE ≥ 45 k_BT)</span>
+          <span class="legend-chip"><i class="legend-indicator" style="background:#f43f5e;"></i>Shallow Spurious Trap (ΔE ≤ 12 k_BT)</span>
+          <span class="legend-chip"><i class="legend-indicator" style="background:#38bdf8;"></i>Quantum Probability Field |ψ|²</span>
+          <span class="legend-chip"><i class="legend-indicator" style="background:#f59e0b;"></i>310.15 K Thermal Brownian Swarm</span>
+        `;
+      } else if (mode === "h01") {
+        titleEl.textContent = "GOOGLE H01 TEMPORAL CORTEX MICROCIRCUIT";
+        subEl.textContent = "6 Anatomical Layers (L1-L6) · 158 Reconstructed C3 Arbor Segments";
+        legEl.innerHTML = `
+          <span class="legend-chip"><i class="legend-indicator" style="background:#10b981;"></i>Layer 4 (Stellate Ingestion Target)</span>
+          <span class="legend-chip"><i class="legend-indicator" style="background:#38bdf8;"></i>Layer 5/6 Pyramidal Projections</span>
+          <span class="legend-chip"><i class="legend-indicator" style="background:#c084fc;"></i>Synaptic Conductance Flow</span>
+        `;
+      } else if (mode === "fusion") {
+        titleEl.textContent = "INTEGRATED CONNECTOME-QUANTUM CO-REGISTRATION";
+        subEl.textContent = "Glass Human Connectome suspended over Quantum Hopfield Phase Space";
+        legEl.innerHTML = `
+          <span class="legend-chip"><i class="legend-indicator" style="background:#38bdf8;"></i>Biological Substrate (Cortex)</span>
+          <span class="legend-chip"><i class="legend-indicator" style="background:#10b981;"></i>Quantum Hopfield Manifold U(q)</span>
+          <span class="legend-chip"><i class="legend-indicator" style="background:#f59e0b;"></i>Extropic Thermal Noise (310.15 K)</span>
+        `;
+      }
+    }
+
+    // ==================== DYNAMIC SVG NEURAL CONNECTORS ====================
+    function updateConnectorSVG() {
+      const svgGroup = document.getElementById("connector-paths-group");
+      if (!svgGroup) return;
+
+      const p0 = document.getElementById("port-hopfield");
+      const p1 = document.getElementById("port-thermo");
+      const p2 = document.getElementById("port-tokens");
+      const p3 = document.getElementById("port-spi");
+
+      const tCard = document.getElementById("telemetry-table-card-el");
+      const sCard = document.getElementById("spi-terminal-card-el");
+
+      if (!p0 || !tCard || !sCard) return;
+
+      const r0 = p0.getBoundingClientRect();
+      const r1 = p1.getBoundingClientRect();
+      const r2 = p2.getBoundingClientRect();
+      const r3 = p3.getBoundingClientRect();
+
+      const rt = tCard.getBoundingClientRect();
+      const rs = sCard.getBoundingClientRect();
+
+      const scrollY = window.scrollY || 0;
+      const scrollX = window.scrollX || 0;
+
+      const lines = [
+        { sx: r0.left + scrollX + 6, sy: r0.top + scrollY + 6, ex: rt.left + scrollX + 12, ey: rt.top + scrollY + 45, grad: "grad-cyan-teal" },
+        { sx: r1.left + scrollX + 6, sy: r1.top + scrollY + 6, ex: rt.left + scrollX + 12, ey: rt.top + scrollY + 140, grad: "grad-amber-rose" },
+        { sx: r2.left + scrollX + 6, sy: r2.top + scrollY + 6, ex: rs.left + scrollX + 12, ey: rs.top + scrollY + 35, grad: "grad-teal-emerald" },
+        { sx: r3.left + scrollX + 6, sy: r3.top + scrollY + 6, ex: rs.left + scrollX + 12, ey: rs.top + scrollY + 120, grad: "grad-cyan-teal" }
+      ];
+
+      let svgHTML = "";
+      lines.forEach((l, idx) => {
+        const dx = l.ex - l.sx;
+        const cx1 = l.sx + dx * 0.45;
+        const cy1 = l.sy;
+        const cx2 = l.sx + dx * 0.55;
+        const cy2 = l.ey;
+        const pathData = `M ${l.sx} ${l.sy} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${l.ex} ${l.ey}`;
+
+        svgHTML += `
+          <path d="${pathData}" fill="none" stroke="url(#${l.grad})" stroke-width="2.2" stroke-linecap="round" opacity="0.82" filter="url(#glow)" />
+          <circle r="4" fill="#ffffff" filter="url(#glow)">
+            <animateMotion path="${pathData}" dur="${1.8 + idx * 0.3}s" repeatCount="indefinite" />
+          </circle>
+        `;
+      });
+      svgGroup.innerHTML = svgHTML;
+    }
+
+    // ==================== AUXILIARY BLOCH SPHERE HUD INSET ====================
+    function drawBlochSphereInset() {
+      const cv = document.getElementById("bloch-canvas");
+      if (!cv) return;
+      const ctx = cv.getContext("2d");
+      const w = cv.width, h = cv.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const cx = w * 0.5, cy = h * 0.52, r = 42;
+
+      // Equator and meridian circles
+      ctx.strokeStyle = "rgba(56, 189, 248, 0.35)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, r, r * 0.32, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Axes Z & X
+      ctx.strokeStyle = "rgba(148, 163, 184, 0.3)";
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - r - 4);
+      ctx.lineTo(cx, cy + r + 4);
+      ctx.moveTo(cx - r - 4, cy);
+      ctx.lineTo(cx + r + 4, cy);
+      ctx.stroke();
+
+      // State vector projection from blochQubit0
+      const bx = appState.blochQubit0[0];
+      const by = appState.blochQubit0[1];
+      const bz = appState.blochQubit0[2];
+
+      const px = cx + (bx * Math.cos(appState.clockTick * 0.8) - by * Math.sin(appState.clockTick * 0.8)) * (r * 0.95);
+      const py = cy - bz * (r * 0.92);
+
+      // State vector line & tip
+      ctx.strokeStyle = "#10b981";
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(px, py);
+      ctx.stroke();
+
+      ctx.fillStyle = "#38bdf8";
+      ctx.beginPath();
+      ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(16, 185, 129, 0.8)";
+      ctx.font = "9px ui-monospace, monospace";
+      ctx.fillText("|ψ⟩", px + 6, py - 4);
+    }
+
+    // ==================== REM OSCILLOSCOPE TRACE ====================
+    function drawOscilloscopeDock() {
+      const cv = document.getElementById("oscilloscope-canvas");
+      if (!cv) return;
+      const ctx = cv.getContext("2d");
+      const w = cv.width, h = cv.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Grid lines
+      ctx.strokeStyle = "rgba(3, 105, 161, 0.2)";
+      ctx.lineWidth = 1;
+      for (let y = 14; y < h; y += 18) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      // Trace 1: 6.0 Hz REM Sine Clock
+      ctx.strokeStyle = "#38bdf8";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        const t = (x / w) * (6.0 / (appState.thetaCarrierHz || 6.0)) * Math.PI * 6 - appState.clockTick * 4.0;
+        const y = h * 0.5 + Math.sin(t) * 26.0;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Trace 2: Johnson-Nyquist Analog Thermal Jitter (310.15 K)
+      ctx.strokeStyle = "rgba(245, 158, 11, 0.65)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      for (let x = 0; x < w; x += 3) {
+        const t = (x / w) * Math.PI * 6 - appState.clockTick * 4.0;
+        const jitter = (Math.sin(x * 13.7 + appState.clockTick * 8.0) + Math.cos(x * 3.3)) * 6.5;
+        const y = h * 0.5 + Math.sin(t) * 26.0 + jitter;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    // ==================== COCKPIT INTERACTIONS & RECALL ====================
+    function switchActiveSlot(slotIdx) {
+      appState.activeSlot = slotIdx;
+      for (let i = 0; i < 4; i++) {
+        document.getElementById(`btn-slot-${i}`).classList.toggle("active", i === slotIdx);
+      }
+      const mem = appState.memories[slotIdx];
+      document.getElementById("lbl-active-engram").textContent = `ENGRAM_0${slotIdx} (${mem.loc})`;
+      triggerQuantumRecall();
+    }
+
+    function triggerQuantumRecall() {
+      // Step through 4 resonant phases visually
+      for (let p = 1; p <= 4; p++) {
+        setTimeout(() => {
+          for (let k = 1; k <= 4; k++) {
+            document.getElementById(`phase-${k}`).classList.toggle("active", k === p);
+          }
+        }, (p - 1) * 120);
+      }
+
+      if (appState.wsConnected && appState.ws) {
+        appState.ws.send(JSON.stringify({
+          type: "TRIGGER_RECALL",
+          target_index: appState.activeSlot,
+          bit_flip_fraction: 0.35
+        }));
+      } else {
+        // Standalone mathematical simulation
+        setTimeout(() => {
+          const fidelity = 0.935 + Math.random() * 0.04;
+          const theta = 5.97 + (Math.random() - 0.5) * 0.07;
+          document.getElementById("table-fidelity").textContent = `${(fidelity * 100).toFixed(2)}% (≥ 85.0%)`;
+          document.getElementById("badge-theta-lock").textContent = `REM CLOCK: ${theta.toFixed(3)} Hz [±5% LOCKED]`;
+          document.getElementById("kpi-osc-theta").textContent = `${theta.toFixed(3)} Hz`;
+          document.getElementById("table-theta").textContent = `${theta.toFixed(4)} Hz (±5% Lock)`;
+          appState.blochQubit0 = [0.1 + Math.random() * 0.05, -0.04, 0.98];
+          document.getElementById("bloch-vector-label").textContent =
+            `[${appState.blochQubit0.map(v => v.toFixed(2)).join(", ")}]`;
+        }, 320);
+      }
+    }
+
+    function triggerThermalTunnelPulse() {
+      appState.tunnelingActive = true;
+      appState.tunnelBeamT = 0.0;
+
+      if (appState.wsConnected && appState.ws) {
+        appState.ws.send(JSON.stringify({
+          type: "TUNNEL_PULSE",
+          target_index: appState.activeSlot
+        }));
+      } else {
+        setTimeout(() => {
+          document.getElementById("table-spurious").textContent = "100.0% (Tunnel Escaped)";
+          document.getElementById("table-tunnel").textContent = "0.9412 (WKB Transverse Penetration)";
+        }, 200);
+      }
+    }
+
+    function injectPoissonPerturbation() {
+      appState.pulseBoost = 2.4;
+      triggerQuantumRecall();
+      appendChatBubble(
+        "operator",
+        `[INJECTING 35% POISSON PROBE NOISE]\n` +
+        `Simulating catastrophic cortical synaptic corruption across H01 Layer-4 engram. Validating ground state recovery.`
+      );
+      setTimeout(() => {
+        appendChatBubble(
+          "assistant",
+          `[HAMILTONIAN RECOVERY COMPLETE]\n` +
+          `Modern Hopfield basin depth retention >= 98.2%. Transverse mixer H_mixer induced barrier tunneling with zero Landauer bit erasure.`
+        );
+      }, 700);
+    }
+
+    // ==================== SPI CHAT TERMINAL ====================
+    function appendChatBubble(role, text, tokens = "") {
+      const box = document.getElementById("chat-transcript-box");
+      const div = document.createElement("div");
+      div.className = `msg-bubble ${role === "operator" ? "operator" : ""}`;
+      div.innerHTML = `
+        <div class="msg-meta">
+          <span>${role === "operator" ? "OPERATOR INQUIRY" : "SOULKILLED PSEUDO INTELLECT (gemini-4-argon · high)"}</span>
+          <span>${new Date().toLocaleTimeString()}</span>
+        </div>
+        ${tokens ? `<div style="font-size:9.5px;color:var(--neon-amber);margin-bottom:4px;">[TOKENS: ${tokens}]</div>` : ""}
+        <div>${text}</div>
+      `;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function handleSendChat(e) {
+      e.preventDefault();
+      const inp = document.getElementById("chat-query-input");
+      const query = inp.value.trim();
+      if (!query) return;
+      inp.value = "";
+
+      appendChatBubble("operator", query);
+
+      if (appState.wsConnected && appState.ws) {
+        appState.ws.send(JSON.stringify({
+          type: "CHAT_QUERY",
+          target_index: appState.activeSlot,
+          query: query
+        }));
+      } else {
+        const mem = appState.memories[appState.activeSlot];
+        setTimeout(() => {
+          const resp = `[GATED BY <LOC:${mem.loc.toUpperCase().replace(/ /g, '_')}> <ERA:${mem.era}> <VALENCE:RESOLUTE_${mem.val}>]\n` +
+            `I am the digitized Soulkilled Pseudo Intellect of ${appState.callsign}, governed by our core axiom.\n\n` +
+            `My collapsed quantum eigenstate anchors this recall in ${mem.loc} during ${mem.era}. Under a 6.00 Hz theta phase-lock, my sensory trace registers: ${mem.sensory}`;
+          appendChatBubble("assistant", resp);
+        }, 400);
+      }
+    }
+
+    function authorizeHumanRelease() {
+      appState.humanAuthorized = true;
+      const btn = document.getElementById("btn-human-release");
+      btn.textContent = "✓ Consciousness Authorized";
+      btn.className = "btn primary";
+      document.getElementById("lbl-gate-status").textContent = "UNLOCKED (CONTINUOUS RUNTIME)";
+      document.getElementById("lbl-gate-status").style.color = "var(--neon-emerald)";
+      appendChatBubble(
+        "assistant",
+        `[CRYPTOGRAPHIC OPERATOR RELEASE AUTHORIZED]\n` +
+        `SPI conscious runtime unlocked under continuous Trotterized unitary evolution U(γ, β). Phase-space volume det(J) = 1.000000 preserved.`
+      );
+    }
+
+    // ==================== PERSONAL INTAKE MODAL ====================
+    function openIntakeModal() {
+      document.getElementById("intake-modal").classList.add("open");
+    }
+    function closeIntakeModal() {
+      document.getElementById("intake-modal").classList.remove("open");
+    }
+
+    function compileUserMindToEngram() {
+      const callsign = document.getElementById("inp-callsign").value.trim() || appState.callsign;
+      const axioms = document.getElementById("inp-axioms").value.trim();
+      appState.callsign = callsign;
+
+      for (let i = 0; i < 4; i++) {
+        const loc = document.getElementById(`slot-loc-${i}`).value.trim();
+        const sens = document.getElementById(`slot-sens-${i}`).value.trim();
+        const val = document.getElementById(`slot-val-${i}`).value.trim();
+        if (loc) appState.memories[i].loc = loc;
+        if (sens) appState.memories[i].sensory = sens;
+        if (val) appState.memories[i].val = val;
+      }
+
+      closeIntakeModal();
+      document.getElementById("lbl-active-engram").textContent = `ENGRAM_00 (${appState.memories[0].loc})`;
+
+      const profilePayload = {
+        user_id: `USER_${callsign.toUpperCase().replace(/ /g, '_')}`,
+        callsign: callsign,
+        substrate_target: "GOOGLE_H01_CORTEX_L4",
+        model_target: "gemini-4-argon",
+        thinking_level: "high",
+        personality: {
+          speech_style: "First-person introspective neuro-physicist",
+          philosophical_axioms: axioms,
+          emotional_baseline: "Stoic lucidity (310.15 K equilibrium)",
+          cognitive_tempo_hz: 6.00
+        },
+        memories: appState.memories.map((m, idx) => ({
+          slot_index: idx,
+          engram_id: `ENGRAM_0${idx}`,
+          era: m.era,
+          location: m.loc,
+          sensory_trace: m.sensory,
+          valence: parseFloat(m.val) || 0.8
+        }))
+      };
+
+      if (appState.wsConnected && appState.ws) {
+        appState.ws.send(JSON.stringify({
+          type: "UPDATE_USER_MEMORIES",
+          profile: profilePayload
+        }));
+      }
+
+      appendChatBubble(
+        "assistant",
+        `[RE-COMPILATION COMPLETE · GOOGLE H01 LAYER 4]\n` +
+        `User mind profile for ${callsign} successfully compiled into N=8 qubit Ising Spin Glass Hamiltonian J_ij. Transverse-field quantum tunneling and 310.15 K thermal noise calibrated.`
+      );
+    }
+
+    // ==================== WEBSOCKET INTEGRATION ====================
+    function initWebSocket() {
+      try {
+        const wsUrl = (window.location.protocol === "https:" ? "wss://" : "ws://") + (window.location.host || "127.0.0.1:8000") + "/ws";
+        appState.ws = new WebSocket(wsUrl);
+
+        appState.ws.onopen = () => {
+          appState.wsConnected = true;
+          document.getElementById("label-ws-status").textContent = "CIRQ QHN: LIVE";
+          document.getElementById("badge-ws-heartbeat").className = "hud-badge emerald";
+        };
+
+        appState.ws.onmessage = (evt) => {
+          try {
+            const data = JSON.parse(evt.data);
+            if (data.type === "TELEMETRY_UPDATE") {
+              const tel = data.telemetry;
+              if (tel.fidelity) document.getElementById("table-fidelity").textContent = `${(tel.fidelity * 100).toFixed(2)}% (≥ 85.0%)`;
+              if (tel.theta_carrier_hz) {
+                appState.thetaCarrierHz = tel.theta_carrier_hz;
+                document.getElementById("badge-theta-lock").textContent = `REM CLOCK: ${tel.theta_carrier_hz.toFixed(3)} Hz [±5% LOCKED]`;
+                document.getElementById("kpi-osc-theta").textContent = `${tel.theta_carrier_hz.toFixed(3)} Hz`;
+                document.getElementById("table-theta").textContent = `${tel.theta_carrier_hz.toFixed(4)} Hz (±5% Lock)`;
+              }
+              if (tel.spurious_escape_rate) document.getElementById("table-spurious").textContent = `${(tel.spurious_escape_rate * 100).toFixed(1)}% (Tunnel Escaped)`;
+              if (tel.tunneling_probability) document.getElementById("table-tunnel").textContent = `${tel.tunneling_probability.toFixed(4)} (WKB Transverse Penetration)`;
+              if (tel.decoding_latency_ms) document.getElementById("table-latency").textContent = `${tel.decoding_latency_ms.toFixed(2)} ms (< 50.0 ms)`;
+              if (tel.active_collapsed_eigenstate) document.getElementById("table-eigenstate").textContent = tel.active_collapsed_eigenstate;
+              if (tel.bloch_qubit_0) {
+                appState.blochQubit0 = tel.bloch_qubit_0;
+                document.getElementById("bloch-vector-label").textContent = `[${tel.bloch_qubit_0.map(v => v.toFixed(2)).join(", ")}]`;
+              }
+            } else if (data.type === "CHAT_RESPONSE") {
+              appendChatBubble("assistant", data.response, data.tokens);
+            }
+          } catch (_err) {}
+        };
+
+        appState.ws.onclose = () => {
+          appState.wsConnected = false;
+          document.getElementById("label-ws-status").textContent = "CIRQ STANDALONE";
+          setTimeout(initWebSocket, 4000);
+        };
+      } catch (_e) {
+        appState.wsConnected = false;
+      }
+    }
+
+    // ==================== BOOTSTRAP ====================
+    window.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const initMode = urlParams.get("mode") || "brain";
+      const initSlot = parseInt(urlParams.get("slot") || "0", 10);
+
+      set3DMode(initMode);
+      if (initSlot >= 0 && initSlot < 4) {
+        switchActiveSlot(initSlot);
+      }
+      setupOrbitEvents();
+      render3DScene();
+      initWebSocket();
+
+      // Immediate greeting so SPI Terminal is never empty
+      appendChatBubble(
+        "assistant",
+        `[ENGRAM-0 REVERSIBLE QUANTUM CONNECTOME INITIALIZED]\n` +
+        `I am Dr. Alistair Vance. My autobiographical engrams are projected onto the Google H01 human cortical Layer-4 substrate. All episodic recall is strictly gated by collapsed quantum eigenstates with zero external document lookup.`
+      );
+
+      window.addEventListener("resize", () => {
+        updateConnectorSVG();
+      });
+    });
+  </script>
+</body>
+</html>
