@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "name": "engram-0-thermodynamic-brain-decoder",
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/engram_0_3d_ui.html" },
+    { "source": "/studio", "destination": "/engram0/web/index.html" },
+    { "source": "/hopfield", "destination": "/engram0/web/connectome_hopfield.html" },
+    { "source": "/thermo", "destination": "/engram0/web/thermo_spi.html" },
+    { "source": "/anatomy/:file*", "destination": "/engram0/web/anatomy/:file*" }
+  ]
+}
