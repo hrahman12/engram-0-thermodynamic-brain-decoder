@@ -46,6 +46,43 @@ class ConnectomeGraph3D:
     engram_metadata: List[EngramMetadata] = field(default_factory=list)
 
 
+# Exact 158 Google H01 C3 Segment IDs from query: "#interneuron #L2 NSe>=800 <NSi"
+# Position: [379548.5, 137610.125, 2660.5], Voxel size: [8nm, 8nm, 33nm], colorSeed: 4270253886
+H01_C3_SEGMENT_IDS: List[str] = [
+    "1100054524", "1115430292", "12237931142", "1333290325", "1538274151", "1539076840",
+    "1594648509", "1638188509", "1828951844", "1915887451", "1988993337", "20070214646",
+    "2090806103", "2134549398", "2178704414", "2294780853", "2339328448", "2499107339",
+    "2499384877", "2557789796", "2673254402", "27622860459", "27651872764", "27870683066",
+    "2791142865", "28000894735", "28045909614", "28378958224", "28409678489", "28452985548",
+    "28525770719", "28643309290", "28672203772", "28802547903", "28803598117", "28918216929",
+    "29021270843", "29182786959", "29238417446", "29298236361", "2935896346", "29459096371",
+    "29618159554", "29765396306", "29925423252", "29938695074", "29969547791", "30101233972",
+    "3023633866", "30376944711", "30406000355", "3052908678", "30668773752", "30767987832",
+    "30871567933", "30974109956", "31031989065", "31032951251", "31061717348", "31133932587",
+    "31149133165", "3125564306", "31658722916", "32444986357", "3430740099", "3504577656",
+    "3518943222", "3573728110", "36123853342", "36153829678", "36241229806", "36284756264",
+    "36445761568", "36590837294", "36619747807", "36620463168", "36633005581", "3664545249",
+    "36662790455", "36678107375", "36763714196", "36809473223", "36822073774", "36822262086",
+    "36852896228", "37173591638", "37218168369", "37318668413", "37319791473", "37420743412",
+    "37421824682", "37463700916", "37536734693", "37581252436", "37594612366", "37668755920",
+    "37770758892", "37801070911", "37930756265", "37958718097", "38018479939", "38092682277",
+    "38106873604", "38208029710", "38222309348", "38339219897", "38368158152", "38383402139",
+    "3839697992", "38413115427", "38543488421", "38573083867", "38586823171", "38602358951",
+    "38717924646", "38863556782", "38863862489", "3897678996", "38994907574", "39023934118",
+    "39038491013", "39052800624", "39081564265", "39271712983", "39271916939", "39359991385",
+    "3941569746", "39505037109", "39694250521", "40043667040", "40102203154", "40247497000",
+    "40378483178", "40407875435", "40464862282", "41354296446", "41630488832", "4217863883",
+    "4318903980", "45701832369", "4580553370", "4698412002", "4784821941", "48079386659",
+    "4917456198", "4961186471", "5062824784", "5499847526", "58866575372", "59536235974",
+    "5965326176", "6024781859", "664433854", "707068981", "794630620", "823395680",
+    "853035674", "910562342",
+]
+H01_VOXEL_DIMENSIONS_M = {"x": 8e-9, "y": 8e-9, "z": 3.3e-8}
+H01_CANONICAL_POSITION = (379548.5, 137610.125, 2660.5)
+H01_SEGMENT_QUERY = "#interneuron #L2 NSe>=800 <NSi"
+H01_COLOR_SEED = 4270253886
+
+
 # Consolidated episodic memories of Dr. Alistair Vance
 CANONICAL_VANCE_ENGRAMS: List[EngramMetadata] = [
     EngramMetadata(
@@ -194,6 +231,10 @@ class ConnectomeIR:
     def _build_ibm1_neural_mass_matrices(
         self, n_nodes: int
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, List[str]]:
+        """
+        Generates a realistic macroscopic IBM-1 directed connectome matrix (W)
+        with small-world modular structure and axonal tract latencies (tau in ms).
+        """
         rng = np.random.default_rng(self.seed + 101)
         phi = np.linspace(0, 2 * np.pi, n_nodes, endpoint=False)
         z_norm = np.linspace(-0.85, 0.85, n_nodes)
@@ -235,6 +276,11 @@ class ConnectomeIR:
     def _build_google_h01_cortical_matrices(
         self, n_nodes: int
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, List[str]]:
+        """
+        Generates a microscopic Google H01 human temporal cortex laminar matrix (L1-L6)
+        capturing canonical microcircuit connectivity (L4 -> L2/3 -> L5 -> L6) and
+        local dendritic conduction delays.
+        """
         rng = np.random.default_rng(self.seed + 202)
         layers = ["L2_3_Pyr", "L4_Stellate", "L5_ThickTufted", "L6_Corticothalamic", "PV_Basket", "SST_Martinotti"]
         layer_idx = np.arange(n_nodes) % len(layers)
@@ -275,12 +321,16 @@ class ConnectomeIR:
         if max_eig > 1e-8:
             W = W / max_eig
 
-        labels = [f"H01_{layers[layer_idx[i]]}_{i:02d}" for i in range(n_nodes)]
+        labels = [
+            f"H01_seg{H01_C3_SEGMENT_IDS[i % len(H01_C3_SEGMENT_IDS)]}_{layers[layer_idx[i]]}"
+            for i in range(n_nodes)
+        ]
         return W, tau_ms, coords, labels
 
     def _fuse_connectome(
         self, mode: ConnectomeMode
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, List[str], List[str]]:
+        """Selects or fuses IBM-1 and Google H01 connectome tensors."""
         if mode == "IBM-1":
             subsystems = ["IBM-1_Macro" for _ in range(self.d)]
             return self.W_ibm1, self.tau_ibm1, self.coords_ibm1, self.labels_ibm1, subsystems
@@ -307,6 +357,11 @@ class ConnectomeIR:
         tau_ms: np.ndarray,
         M: Optional[int] = None,
     ) -> np.ndarray:
+        """
+        Maps directed coupling weights W in R^{d x d} and conduction latencies
+        tau_ms in R^{d x d} into a normalized continuous associative engram basis
+        matrix X in R^{d x M}.
+        """
         num_patterns = M if M is not None else self.M
         omega_theta_rad_ms = 2.0 * np.pi * (self.f_theta_hz / 1000.0)
         tau_char_ms = 18.0
@@ -317,7 +372,7 @@ class ConnectomeIR:
         skew_part = 0.5 * (delay_kernel - delay_kernel.T)
         associative_operator = sym_part + 0.35 * (skew_part @ skew_part.T)
 
-        u_vecs, _, _ = np.linalg.svd(associative_operator)
+        u_vecs, s_vals, _ = np.linalg.svd(associative_operator)
 
         raw_basis = np.zeros((self.d, num_patterns), dtype=np.float64)
         node_idx = np.arange(self.d, dtype=np.float64)
@@ -336,6 +391,10 @@ class ConnectomeIR:
         return X
 
     def generate_spurious_attractors(self, n_spurious: int = 6) -> np.ndarray:
+        """
+        Generates shallow spurious cross-talk states (frustrated mixtures of subsets of
+        canonical engrams plus orthogonal jitter) to test the 5% Sleep Pruning Rule.
+        """
         rng = np.random.default_rng(self.seed + 999)
         spurious_basis = np.zeros((self.d, n_spurious), dtype=np.float64)
         for k in range(n_spurious):
@@ -355,6 +414,10 @@ class ConnectomeIR:
         poisson_noise_fraction: float = 0.35,
         rng: Optional[np.random.Generator] = None,
     ) -> np.ndarray:
+        """
+        Generates an input probe vector corrupted by 35% Poisson shot noise,
+        modeling stochastic spike-count fluctuations in cortical readout.
+        """
         gen = rng if rng is not None else self.rng
         target_vec = self.X[:, target_index].copy()
 
@@ -370,6 +433,7 @@ class ConnectomeIR:
         return noisy_probe / np.linalg.norm(noisy_probe)
 
     def export_graph_3d(self) -> ConnectomeGraph3D:
+        """Exports the complete 3D anatomical and associative graph for UI rendering."""
         return ConnectomeGraph3D(
             node_coords=self.node_coords.copy(),
             node_labels=list(self.node_labels),
