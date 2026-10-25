@@ -1,4 +1,3 @@
-"""
 Engram-0: Universal Quantum-Thermodynamic Connectome Engine & WebGPU Cockpit
 =============================================================================
 Architecture: Pure-Software Quantum Hopfield Network (QHN) + Reversible Unitary Mechanics + Thermodynamics
