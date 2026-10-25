@@ -77,7 +77,7 @@
     return geom;
   }
 
-  function buildCharacterGroup(color = "#df9ca3") {
+  function buildCharacterGroup(color = "#df9ca3", options = {}) {
     const group = new THREE.Group();
     const matCord = new THREE.MeshPhysicalMaterial({ color, roughness: 0.52, metalness: 0, clearcoat: 0.12, clearcoatRoughness: 0.65 });
     const matNerve = new THREE.MeshStandardMaterial({ color: "#ecc4b4", roughness: 0.7 });
@@ -94,6 +94,7 @@
     const subcortex = new THREE.Group();
     group.add(cortex, subcortex);
 
+    if (options && options.eyes === true) {
     for (const side of [-1, 1]) {
       const root = new THREE.Group();
       root.position.set(side * 0.47, -0.43, 1.06);
@@ -159,6 +160,10 @@
       }
     }
 
+    // Stylized cervical spinal cord
+    }
+
+    if (options && options.spine === true) {
     const cordCurve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(-0.008, -0.88, -0.397),
       new THREE.Vector3(0.005, -1.02, -0.37),
@@ -187,6 +192,7 @@
     cordMesh.name = "stylized-cervical-cord";
     group.add(cordMesh);
 
+    // 7 levels of cervical nerve rootlets
     for (let w = 0; w < 7; w++) {
       const t = 0.15 + w * 0.11;
       const pt = cordCurve.getPointAt(t);
@@ -212,6 +218,7 @@
       }
     }
 
+    // 4 cervical vertebrae
     for (let w = 0; w < 4; w++) {
       const pt = cordCurve.getPointAt(0.57 + w * 0.115);
       const vert = new THREE.Group();
@@ -239,6 +246,8 @@
     }
 
     group.rotation.x = 0.045;
+    }
+
     return { group, eyes, eyeRoots, cortex, subcortex };
   }
 
@@ -429,6 +438,7 @@
       }
     }
 
+    // Radial glow sprite texture
     const spriteCanvas = document.createElement("canvas");
     spriteCanvas.width = spriteCanvas.height = 64;
     const sCtx = spriteCanvas.getContext("2d");
@@ -566,7 +576,7 @@
     rimLight.position.set(1, 3, -3);
     scene.add(rimLight);
 
-    const charObj = buildCharacterGroup(state.color);
+    const charObj = buildCharacterGroup(state.color, state);
     scene.add(charObj.group);
 
     const researchObj = buildResearchOverlay();
@@ -575,6 +585,7 @@
     const distractionObj = buildPlayfulDistraction();
     scene.add(distractionObj.root);
 
+    // Build 19 HTML markers overlay
     const markersWrap = document.createElement("div");
     markersWrap.className = "brain-research-markers";
     container.appendChild(markersWrap);
@@ -588,6 +599,7 @@
       return btn;
     });
 
+    // Build Thoughts overlay container
     const thoughtsWrap = document.createElement("div");
     thoughtsWrap.style.cssText = "position:absolute;inset:0;pointer-events:none;z-index:3;";
     container.appendChild(thoughtsWrap);
@@ -635,6 +647,7 @@
     }
     renderThoughtPills();
 
+    // Load 28 fsaverage/ENIGMA meshes
     loadAnatomyMeshes(charObj.cortex, charObj.subcortex, state.color)
       .then(() => {
         applyInsideMode(charObj.cortex, charObj.subcortex, state.inside);
@@ -645,6 +658,7 @@
         applyInsideMode(charObj.cortex, charObj.subcortex, state.inside);
       });
 
+    // Orbit interaction + 4s auto-return
     let orbit = { yaw: 0, pitch: 0, lastInput: 0, dragging: false, returnFrom: null };
     let activePtr = null;
     renderer.domElement.addEventListener("pointerdown", e => {
@@ -717,6 +731,7 @@
 
       distractionObj.update(elapsed, state.butterfly);
 
+      // Damped-spring eye gaze toward active thought or butterfly
       const activeT = state.thoughts.find(t => t.id === state.activeThoughtId);
       const targetX = activeT ? activeT.x : 0;
       const targetY = activeT ? activeT.y : 0;
@@ -725,11 +740,13 @@
       gazeX += velX * dt;
       gazeY += velY * dt;
 
+      // Gentle breathing & bobbing
       charObj.group.position.y = Math.sin(elapsed * 1.15) * 0.033;
       charObj.group.rotation.y = Math.sin(elapsed * 0.35) * 0.026 + gazeX * 0.055;
       const breath = 1 + Math.sin(elapsed * 1.7) * 0.006;
       charObj.group.scale.set(breath, breath, breath);
 
+      // Compute 3D look target
       const lookTarget = new THREE.Vector3();
       if (activeT) {
         raycaster.setFromCamera(new THREE.Vector2(gazeX, -gazeY), camera);
@@ -745,6 +762,7 @@
       charObj.group.updateWorldMatrix(true, false);
       charObj.group.worldToLocal(lookTarget);
 
+      // Natural blinking
       const bMod = elapsed % 4.8;
       const blinkScale = bMod > 0.1 && bMod < 0.24 ? Math.max(0.08, Math.abs(bMod - 0.17) / 0.07) : 1.0;
       for (let i = 0; i < charObj.eyes.length; i++) {
@@ -757,6 +775,7 @@
         charObj.eyes[i].scale.y = blinkScale;
       }
 
+      // Update fibers & 19 10-20 markers
       researchObj.root.visible = state.fibers;
       markersWrap.style.display = state.fibers ? "block" : "none";
       if (state.fibers) {
