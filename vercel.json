@@ -1,17 +1,21 @@
 {
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/sanctuary", "destination": "/engram0/web/connectome_hopfield.html" },
-    { "source": "/connectome_hopfield", "destination": "/engram0/web/connectome_hopfield.html" },
-    { "source": "/lab", "destination": "/engram0/web/index.html" },
-    { "source": "/brainlab", "destination": "/engram0/web/index.html" },
-    { "source": "/studio", "destination": "/engram0/web/index.html" },
-    { "source": "/hopfield", "destination": "/engram0/web/connectome_hopfield.html" },
-    { "source": "/thermo", "destination": "/engram0/web/thermo_spi.html" },
-    { "source": "/connectome", "destination": "/engram_0_3d_ui.html" },
-    { "source": "/hub", "destination": "/engram_0_3d_ui.html" },
-    { "source": "/cockpit", "destination": "/index.html" },
-    { "source": "/health", "destination": "/api/index.py" },
-    { "source": "/api/:path*", "destination": "/api/index.py" }
+  "version": 2,
+  "routes": [
+    { "src": "^/$", "dest": "/index.html" },
+    { "src": "^/cockpit$", "dest": "/index.html" },
+    { "src": "^/connectome$", "dest": "/engram_0_3d_ui.html" },
+    { "src": "^/hub$", "dest": "/engram_0_3d_ui.html" },
+    { "src": "^/sanctuary$", "dest": "/engram0/web/connectome_hopfield.html" },
+    { "src": "^/connectome_hopfield$", "dest": "/engram0/web/connectome_hopfield.html" },
+    { "src": "^/lab$", "dest": "/engram0/web/index.html" },
+    { "src": "^/brainlab$", "dest": "/engram0/web/index.html" },
+    { "src": "^/studio$", "dest": "/engram0/web/index.html" },
+    { "src": "^/hopfield$", "dest": "/engram0/web/connectome_hopfield.html" },
+    { "src": "^/thermo$", "dest": "/engram0/web/thermo_spi.html" },
+    { "src": "^/engram0/(.*)$", "dest": "/engram0/$1" },
+    { "src": "^/assets/(.*)$", "dest": "/assets/$1" },
+    { "src": "^/(.*)\\.(html|js|css|json|bin|svg|png|jpg|ico)$", "dest": "/$1.$2" },
+    { "src": "^/api/(.*)$", "dest": "/api/index.py?__path=/api/$1" },
+    { "src": "^/health$", "dest": "/api/index.py?__path=/health" }
   ]
 }
