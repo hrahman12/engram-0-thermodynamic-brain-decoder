@@ -59,6 +59,8 @@ except ImportError:
             return len(self._ops)
 
     class _MockSimulator:
+        def __init__(self, *args, **kwargs):
+            pass
         def simulate(self, circuit, initial_state=None):
             class _Res:
                 def __init__(self):
