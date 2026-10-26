@@ -1,6 +1,27 @@
 {
   "version": 2,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index.py?__path=/$1" }
+  "cleanUrls": true,
+  "routes": [
+    { "src": "^/$", "dest": "/index.html" },
+    { "src": "^/cockpit/?$", "dest": "/index.html" },
+    { "src": "^/connectome/?$", "dest": "/engram_0_3d_ui.html" },
+    { "src": "^/hub/?$", "dest": "/engram_0_3d_ui.html" },
+    { "src": "^/sanctuary/?$", "dest": "/engram0/web/connectome_hopfield.html" },
+    { "src": "^/connectome_hopfield/?$", "dest": "/engram0/web/connectome_hopfield.html" },
+    { "src": "^/engram0/web/connectome_hopfield/?$", "dest": "/engram0/web/connectome_hopfield.html" },
+    { "src": "^/engram0/web/connectome_hopfield\\.html$", "dest": "/engram0/web/connectome_hopfield.html" },
+    { "src": "^/lab/?$", "dest": "/engram0/web/index.html" },
+    { "src": "^/brainlab/?$", "dest": "/engram0/web/index.html" },
+    { "src": "^/studio/?$", "dest": "/engram0/web/index.html" },
+    { "src": "^/engram0/web/index/?$", "dest": "/engram0/web/index.html" },
+    { "src": "^/engram0/web/index\\.html$", "dest": "/engram0/web/index.html" },
+    { "src": "^/thermo/?$", "dest": "/engram0/web/thermo_spi.html" },
+    { "src": "^/engram0/web/thermo_spi/?$", "dest": "/engram0/web/thermo_spi.html" },
+    { "src": "^/engram0/web/thermo_spi\\.html$", "dest": "/engram0/web/thermo_spi.html" },
+    { "src": "^/engram0/(.*)$", "dest": "/engram0/$1" },
+    { "src": "^/assets/(.*)$", "dest": "/assets/$1" },
+    { "src": "^/(.*)\\.(html|js|css|json|bin|svg|png|jpg|ico)$", "dest": "/$1.$2" },
+    { "src": "^/api/(.*)$", "dest": "/api/index.py?__path=/api/$1" },
+    { "src": "^/health$", "dest": "/api/index.py?__path=/health" }
   ]
 }
