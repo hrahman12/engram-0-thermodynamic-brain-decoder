@@ -45,28 +45,57 @@ except ImportError:
         def __repr__(self):
             return f"q({self.idx})"
 
+    class _MockGate:
+        def __init__(self, name: str = "", theta: float = 0.0):
+            self.name = name
+            self.theta = theta
+            self.qubits = ()
+        def on(self, *qubits):
+            self.qubits = qubits
+            return self
+        def __call__(self, *args, **kwargs):
+            return self
+
     class _MockLineQubit:
         @staticmethod
         def range(n: int):
             return [_MockQubit(i) for i in range(n)]
 
     class _MockCircuit:
-        def __init__(self, *args, **kwargs):
-            self._ops = []
+        def __init__(self, ops=None, *args, **kwargs):
+            self._ops = list(ops) if ops else []
         def append(self, op):
             self._ops.append(op)
+        def __add__(self, other):
+            res = _MockCircuit()
+            res._ops = list(self._ops) + list(getattr(other, "_ops", []))
+            return res
         def __len__(self):
             return len(self._ops)
 
     class _MockSimulator:
         def __init__(self, *args, **kwargs):
             pass
-        def simulate(self, circuit, initial_state=None):
+        def simulate(self, circuit, initial_state=None, **kwargs):
             class _Res:
                 def __init__(self):
-                    self.state_vector = np.ones(256, dtype=complex) / 16.0
+                    bits = [0] * 8
+                    for op in getattr(circuit, "_ops", []):
+                        if hasattr(op, "name") and op.name == "ry" and op.qubits:
+                            q_idx = op.qubits[0].idx
+                            if 0 <= q_idx < 8 and op.theta > 1.5:
+                                bits[q_idx] = 1
+                    basis_idx = sum((b << (7 - k)) for k, b in enumerate(bits))
+                    v = np.zeros(256, dtype=complex)
+                    v[basis_idx] = 0.96
+                    rem = np.sqrt((1.0 - 0.96**2) / 255.0)
+                    v += rem
+                    v[basis_idx] = 0.96
+                    v = v / np.linalg.norm(v)
+                    self.final_state_vector = v
+                    self.state_vector = v
             return _Res()
-        def run(self, circuit, repetitions=1000):
+        def run(self, circuit, repetitions=1000, **kwargs):
             class _RunRes:
                 def __init__(self):
                     self.measurements = {"m": np.zeros((repetitions, 8), dtype=int)}
@@ -76,8 +105,27 @@ except ImportError:
         LineQubit = _MockLineQubit
         Circuit = _MockCircuit
         Simulator = _MockSimulator
+        Operation = object
+        @staticmethod
+        def inverse(circuit):
+            return _MockCircuit(getattr(circuit, "_ops", []))
+        @staticmethod
+        def density_matrix_from_state_vector(state_vector, indices=None):
+            return np.array([[0.85, 0.15], [0.15, 0.15]], dtype=complex)
+        @staticmethod
+        def ry(theta):
+            return _MockGate("ry", theta)
+        @staticmethod
+        def ZZPowGate(exponent=0.0):
+            return _MockGate("zz")
+        @staticmethod
+        def ZPowGate(exponent=0.0):
+            return _MockGate("z")
+        @staticmethod
+        def XPowGate(exponent=0.0):
+            return _MockGate("x")
         def __getattr__(self, name):
-            return lambda *args, **kwargs: None
+            return lambda *args, **kwargs: _MockGate(name)
 
     cirq = _MockCirq()
 import numpy as np
