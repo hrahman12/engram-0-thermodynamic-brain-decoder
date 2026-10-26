@@ -221,72 +221,86 @@ class handler(BaseHTTPRequestHandler):  # noqa: N801
 
     def do_POST(self) -> None:  # noqa: N802
         req_path = self._resolve_path()
-        length = int(self.headers.get("Content-Length", "0"))
-        body = json.loads(self.rfile.read(length).decode("utf-8")) if length > 0 else {}
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+            body = json.loads(self.rfile.read(length).decode("utf-8")) if length > 0 else {}
+        except Exception as e:
+            self._send_json({"error": f"Invalid JSON body: {e}"}, status=400)
+            return
 
-        if req_path in ("/api/quantum_recall", "/api/decode_quantum"):
-            target_idx = int(body.get("target_index", 0)) % STATE.connectome.M
-            bit_flip = float(body.get("bit_flip_fraction", 0.35))
-            q_res = STATE.qhn.run_quantum_recall(target_index=target_idx, bit_flip_fraction=bit_flip)
-            packet = STATE.tokenizer.tokenize_quantum(q_res)
-            self._send_json({
-                "target_index": target_idx,
-                "engram_id": q_res.engram_id,
-                "ground_state_fidelity": round(q_res.ground_state_fidelity, 5),
-                "unitary_reversibility_fidelity": round(q_res.unitary_reversibility_fidelity, 8),
-                "tunneling_probability": round(q_res.tunneling_probability, 5),
-                "spurious_escaped": q_res.spurious_escaped,
-                "measured_theta_hz": round(q_res.measured_theta_hz, 4),
-                "collapsed_bitstring": q_res.collapsed_bitstring,
-                "bloch_vector": [round(x, 4) for x in q_res.bloch_vector],
-                "tokens": packet.to_dict(),
-                "latency_ms": round(q_res.latency_ms, 3),
-            })
+        try:
+            if req_path in ("/api/quantum_recall", "/api/decode_quantum"):
+                target_idx = int(body.get("target_index", 0)) % STATE.connectome.M
+                bit_flip = float(body.get("bit_flip_fraction", 0.35))
+                q_res = STATE.qhn.run_quantum_recall(target_index=target_idx, bit_flip_fraction=bit_flip)
+                packet = STATE.tokenizer.tokenize_quantum(q_res)
+                self._send_json({
+                    "target_index": target_idx,
+                    "engram_id": q_res.engram_id,
+                    "ground_state_fidelity": round(q_res.ground_state_fidelity, 5),
+                    "unitary_reversibility_fidelity": round(q_res.unitary_reversibility_fidelity, 8),
+                    "tunneling_probability": round(q_res.tunneling_probability, 5),
+                    "spurious_escaped": q_res.spurious_escaped,
+                    "measured_theta_hz": round(q_res.measured_theta_hz, 4),
+                    "collapsed_bitstring": q_res.collapsed_bitstring,
+                    "bloch_vector": [round(x, 4) for x in q_res.bloch_vector],
+                    "tokens": packet.to_dict(),
+                    "latency_ms": round(q_res.latency_ms, 3),
+                })
+                return
 
-        elif req_path == "/api/intake":
-            new_profile = UserMindProfile.from_dict(body)
-            STATE.connectome.ingest_user_profile(new_profile)
-            STATE.qhn.ising = STATE.connectome.ising
-            STATE.tokenizer = SemanticTokenizer(
-                X=STATE.connectome.X,
-                metadata=STATE.connectome.metadata,
-                spin_patterns=STATE.connectome.ising.spin_patterns,
-            )
-            STATE.spi.set_user_profile(new_profile)
-            self._send_json({
-                "status": "COMPILED_TO_QUANTUM_ENGRAM",
-                "callsign": new_profile.callsign,
-                "memories_count": len(new_profile.memories),
-            })
+            elif req_path == "/api/intake":
+                new_profile = UserMindProfile.from_dict(body)
+                STATE.connectome.ingest_user_profile(new_profile)
+                STATE.qhn.ising = STATE.connectome.ising
+                STATE.tokenizer = SemanticTokenizer(
+                    X=STATE.connectome.X,
+                    metadata=STATE.connectome.metadata,
+                    spin_patterns=STATE.connectome.ising.spin_patterns,
+                )
+                STATE.spi.set_user_profile(new_profile)
+                self._send_json({
+                    "status": "COMPILED_TO_QUANTUM_ENGRAM",
+                    "callsign": new_profile.callsign,
+                    "memories_count": len(new_profile.memories),
+                })
+                return
 
-        elif req_path == "/api/decode":
-            target_idx = int(body.get("target_index", 0)) % STATE.connectome.M
-            noise = float(body.get("poisson_noise", 0.35))
-            probe = STATE.connectome.sample_noisy_probe(target_index=target_idx, poisson_noise_fraction=noise)
-            traj = STATE.engram.decode(probe, n_steps=36, enable_thermal_noise=True)
-            packet = STATE.tokenizer.tokenize(traj)
-            self._send_json({
-                "packet": packet.to_dict(),
-                "initial_energy_kbt": traj.initial_energy_kbt,
-                "settled_energy_kbt": traj.settled_energy_kbt,
-                "delta_energy_kbt": traj.delta_energy_kbt,
-                "reversibility_mse": traj.reversibility_mse,
-                "measured_theta_hz": traj.measured_theta_hz,
-            })
+            elif req_path == "/api/decode":
+                target_idx = int(body.get("target_index", 0)) % STATE.connectome.M
+                noise = float(body.get("poisson_noise", 0.35))
+                probe = STATE.connectome.sample_noisy_probe(target_index=target_idx, poisson_noise_fraction=noise)
+                traj = STATE.engram.decode(probe, n_steps=36, enable_thermal_noise=True)
+                packet = STATE.tokenizer.tokenize(traj)
+                self._send_json({
+                    "packet": packet.to_dict(),
+                    "initial_energy_kbt": traj.initial_energy_kbt,
+                    "settled_energy_kbt": traj.settled_energy_kbt,
+                    "delta_energy_kbt": traj.delta_energy_kbt,
+                    "reversibility_mse": traj.reversibility_mse,
+                    "measured_theta_hz": traj.measured_theta_hz,
+                })
+                return
 
-        elif req_path == "/api/query_spi":
-            target_idx = int(body.get("target_index", 0)) % STATE.connectome.M
-            query = str(body.get("query", "Who are you and what do you remember most vividly?"))
-            q_res = STATE.qhn.run_quantum_recall(target_index=target_idx, bit_flip_fraction=0.35)
-            packet = STATE.tokenizer.tokenize_quantum(q_res)
-            turn = STATE.spi.query(query, packet, allow_live_api=True)
-            self._send_json({
-                "turn": turn.turn_index,
-                "query": turn.user_query,
-                "engram_id": turn.engram_id,
-                "tokens": turn.gating_token_stream,
-                "response": turn.persona_response,
-                "grounding_verified": turn.grounding_verified,
-            })
-        else:
-            self._send_json({"error": f"Unknown endpoint {req_path}"}, status=404)
+            elif req_path == "/api/query_spi":
+                target_idx = int(body.get("target_index", 0)) % STATE.connectome.M
+                query = str(body.get("query", "Who are you and what do you remember most vividly?"))
+                q_res = STATE.qhn.run_quantum_recall(target_index=target_idx, bit_flip_fraction=0.35)
+                packet = STATE.tokenizer.tokenize_quantum(q_res)
+                turn = STATE.spi.query(query, packet, allow_live_api=True)
+                self._send_json({
+                    "turn": turn.turn_index,
+                    "query": turn.user_query,
+                    "engram_id": turn.engram_id,
+                    "tokens": turn.gating_token_stream,
+                    "response": turn.persona_response,
+                    "grounding_verified": turn.grounding_verified,
+                })
+                return
+
+            else:
+                self._send_json({"error": f"Unknown endpoint {req_path}"}, status=404)
+        except Exception as e:
+            import traceback
+            tb = traceback.format_exc()
+            self._send_json({"error": str(e), "traceback": tb}, status=500)
