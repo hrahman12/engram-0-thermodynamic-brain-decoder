@@ -4,27 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#f7f8f5" />
-  <title>My Little Brain · ConnectomeHopfield Companion</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="stylesheet" href="style.css" />
+  <title>▲ Engram-0 · 3D Sanctuary & My Little Brain Connectome</title>
+  <link rel="icon" type="image/svg+xml" href="/engram0/web/favicon.svg" />
+  <link rel="stylesheet" href="/engram0/web/style.css" />
+  <style>
+    #startup-overlay, .startup { display: none !important; }
+  </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="little_brain_3d.js"></script>
+  <script src="/engram0/web/little_brain_3d.js"></script>
 </head>
 <body>
-  <div class="startup" id="startup-overlay" aria-hidden="true">
-    <div class="startup-character">
-      <div class="startup-brain">
-        <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>
-        <div class="startup-eyes"><i></i><i></i></div>
-      </div>
-      <span class="startup-heart">♥</span>
-      <span class="startup-spark">✦</span>
-    </div>
-    <p>Waking up your little brain…</p>
-  </div>
-
   <div class="app simple-app cx-lab" style="--chat-width: 390px;">
     <main class="workspace">
+      <!-- Header -->
       <header class="simple-header">
         <div class="workspace-brand">
           <button type="button" class="icon-button is-active" id="btn-toggle-left" title="Toggle twins &amp; connectome pane">
@@ -33,7 +25,7 @@
           <span class="cute-logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>
           </span>
-          <span>My Little Brain <small class="cx-tagline">ConnectomeHopfield · Symplectic Decoder</small></span>
+          <span>My Little Brain <small class="cx-tagline">3D Sanctuary · Symplectic Connectome</small></span>
         </div>
 
         <div class="focused-brain">
@@ -43,10 +35,16 @@
         </div>
 
         <div class="simple-header-actions">
-          <a href="index.html" class="chat-toggle" title="Open cortex² Quantum Brain Detective">
-            <span>cortex² Lab</span>
+          <a href="/lab" class="chat-toggle" title="Open cortex² Brain Lab & Studio">
+            <span>🔬 Brain Lab</span>
           </a>
-          <a href="thermo_spi.html" class="chat-toggle" title="Open ThermoSPI 310.15K Sleep Pruning Studio">
+          <a href="/connectome" class="chat-toggle" title="Open Connectome Hub">
+            <span>🌐 Connectome Hub</span>
+          </a>
+          <a href="/" class="chat-toggle" title="Open Quantum Hopfield Cockpit">
+            <span>⚡ Cockpit</span>
+          </a>
+          <a href="/thermo" class="chat-toggle" title="Open ThermoSPI 310.15K Sleep Pruning Studio">
             <span>ThermoSPI</span>
           </a>
           <button type="button" class="chat-toggle active" id="btn-toggle-right">
@@ -56,7 +54,9 @@
         </div>
       </header>
 
+      <!-- Workspace Body -->
       <div class="workspace-body">
+        <!-- Left Collapsible Glass Pane -->
         <aside class="workspace-pane pane-left" id="left-pane" style="width: 292px;" aria-label="Digital Twins &amp; Connectome Basins">
           <header class="pane-heading">
             <h2>Twins &amp; Engram Basins</h2>
@@ -104,15 +104,18 @@
           </div>
         </aside>
 
+        <!-- Center 3D Brain Habitat -->
         <section class="main-content">
           <div class="simple-habitat cx-habitat" id="habitat-view">
             <div class="brain-scene" id="brain-scene-container">
+              <!-- Focus Energy Pill (.energy-pill from My Little Brain) -->
               <div class="energy-pill">
                 <span>Focus</span>
                 <meter id="focus-meter" min="0" max="100" value="96"></meter>
                 <small id="focus-text">96% · ΔE = -9.42 k_BT</small>
               </div>
 
+              <!-- Live 8-Channel Cortical Trace Strip (.cx-tracestrip) -->
               <div class="cx-tracestrip" id="live-tracestrip" aria-label="Live Symplectic Leapfrog &amp; Cortical Traces"></div>
 
               <a class="brain-anatomy-note" href="anatomy/README.txt" target="_blank" rel="noreferrer">
@@ -121,6 +124,7 @@
             </div>
           </div>
 
+          <!-- Thoughts Search & List View (when "Thoughts & Engrams" tab is selected) -->
           <div class="simple-thoughts" id="thoughts-list-view" style="display: none;">
             <div class="thoughts-heading">
               <div>
@@ -132,6 +136,7 @@
             <div class="thought-list" id="thought-cards-container"></div>
           </div>
 
+          <!-- Connectome IR & Symplectic Controls View (when "Connectome IR & Poisson" is selected) -->
           <div class="feature-page" id="connectome-feature-view" style="display: none;">
             <header>
               <div>
@@ -169,13 +174,14 @@
                 <label style="font-size: 11px; color: #6f7e68;">Poisson Shot-Noise Fraction: <b id="noise-val-label">35%</b></label>
                 <input type="range" id="poisson-noise-slider" min="5" max="65" step="5" value="35" oninput="document.getElementById('noise-val-label').textContent = this.value + '%'" />
                 <footer>
-                  <span id="decode-latency-span">Latency: 2.79 ms (&lt; 50 ms)</span>
+                  <span id="decode-latency-span">Latency: 3.11 ms (&lt; 50 ms)</span>
                   <button type="button" class="primary-button" onclick="runSymplecticDecode(); switchSubView('brain');">Decode Probe</button>
                 </footer>
               </div>
             </div>
           </div>
 
+          <!-- Top-right 3D Scene Options (.scene-options from My Little Brain / cortex²) -->
           <div class="scene-options" id="scene-options-bar">
             <button type="button" class="selected" id="opt-inside" onclick="toggleSceneOption('inside')">
               <span>Inside</span>
@@ -195,6 +201,7 @@
           </div>
         </section>
 
+        <!-- Right Collapsible Glass Conversation & Telemetry Pane -->
         <aside class="workspace-pane pane-right" id="right-pane" style="width: 390px;" aria-label="Conversation &amp; Symplectic Telemetry">
           <header class="pane-heading">
             <h2>Conversation &amp; Telemetry</h2>
@@ -238,6 +245,6 @@
     </main>
   </div>
 
-  <script src="connectome_hopfield.js"></script>
+  <script src="/engram0/web/connectome_hopfield.js"></script>
 </body>
 </html>
