@@ -4,11 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#f7f8f5" />
-  <title>My Little Brain · ThermoSPI 310.15K Pruning &amp; SPI Studio</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="stylesheet" href="style.css" />
+  <title>▲ Engram-0 · ThermoSPI 310.15K Pruning Studio</title>
+  <link rel="icon" type="image/svg+xml" href="/engram0/web/favicon.svg" />
+  <link rel="stylesheet" href="/engram0/web/style.css" />
+  <style>
+    #startup-overlay, .startup { display: none !important; }
+  </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="little_brain_3d.js"></script>
+  <script src="/engram0/web/little_brain_3d.js"></script>
 </head>
 <body>
   <div class="app simple-app cx-lab" style="--chat-width: 420px;">
@@ -31,8 +34,10 @@
         </div>
 
         <div class="simple-header-actions">
-          <a href="index.html" class="chat-toggle"><span>cortex² Lab</span></a>
-          <a href="connectome_hopfield.html" class="chat-toggle"><span>ConnectomeHopfield</span></a>
+          <a href="/lab" class="chat-toggle"><span>🔬 Brain Lab</span></a>
+          <a href="/sanctuary" class="chat-toggle"><span>🧠 3D Sanctuary</span></a>
+          <a href="/connectome" class="chat-toggle"><span>🌐 Connectome Hub</span></a>
+          <a href="/" class="chat-toggle"><span>⚡ Cockpit</span></a>
           <button type="button" class="chat-toggle active" onclick="const p=document.getElementById('thermo-right');p.style.display=p.style.display==='none'?'flex':'none';">
             <span>SPI &amp; Assertions</span>
           </button>
@@ -40,6 +45,7 @@
       </header>
 
       <div class="workspace-body">
+        <!-- Left Collapsible Glass Pane: Thermodynamic & Self-Healing Controls -->
         <aside class="workspace-pane pane-left" id="thermo-left" style="width: 300px;" aria-label="Thermodynamic Reactor Controls">
           <header class="pane-heading">
             <h2>310.15 K Sleep Pruner</h2>
@@ -106,6 +112,7 @@
           </div>
         </aside>
 
+        <!-- Center 3D Brain Habitat + Floating 8-Orb Softmax & Pruning Overlay -->
         <section class="main-content">
           <div class="simple-habitat cx-habitat with-qviz" id="thermo-habitat">
             <div class="brain-scene" id="thermo-brain-scene">
@@ -126,6 +133,7 @@
             <button type="button" class="selected" id="t-opt-qviz" onclick="toggleThermoQviz()"><span>8-Engram Orbs</span></button>
           </div>
 
+          <!-- Floating 8-Orb Softmax Attention & Pruning Card (.cx-qviz) -->
           <section class="cx-qviz" id="thermo-qviz" aria-label="Softmax Attractor Marginals &amp; 50-Trial Ledger">
             <header>
               <strong>Softmax Attention s(q*) &amp; 50 MC Trials</strong>
@@ -141,7 +149,7 @@
                 <span style="width: 12%"></span>
                 <i style="left: 85%"></i>
               </div>
-              <b>2.79<small>/50ms</small></b>
+              <b>3.11<small>/50ms</small></b>
             </div>
             <figure class="cx-figure cx-histogram compact">
               <div class="cx-hist-rows" id="thermo-hist-rows"></div>
@@ -150,6 +158,7 @@
           </section>
         </section>
 
+        <!-- Right Collapsible Glass Pane: 6 Sandbox Assertions & Dr. Alistair Vance SPI -->
         <aside class="workspace-pane pane-right" id="thermo-right" style="width: 420px;" aria-label="6 Sandbox Assertions &amp; Dr. Alistair Vance SPI">
           <header class="pane-heading">
             <h2>6 Assertions &amp; Vance SPI</h2>
@@ -197,6 +206,6 @@
     </main>
   </div>
 
-  <script src="thermo_spi.js"></script>
+  <script src="/engram0/web/thermo_spi.js"></script>
 </body>
 </html>
