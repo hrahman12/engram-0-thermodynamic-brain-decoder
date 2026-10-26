@@ -4,27 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#f7f8f5" />
-  <title>Engram-0 · My Little Brain × cortex² × Google H01 3D Studio</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="stylesheet" href="style.css" />
+  <title>▲ Engram-0 · cortex² Brain Lab & Google H01 Studio</title>
+  <link rel="icon" type="image/svg+xml" href="/engram0/web/favicon.svg" />
+  <link rel="stylesheet" href="/engram0/web/style.css" />
+  <style>
+    #startup-overlay, .startup { display: none !important; }
+  </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="little_brain_3d.js"></script>
+  <script src="/engram0/web/little_brain_3d.js"></script>
 </head>
 <body>
-  <div class="startup" id="startup-overlay" aria-hidden="true">
-    <div class="startup-character">
-      <div class="startup-brain">
-        <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>
-        <div class="startup-eyes"><i></i><i></i></div>
-      </div>
-      <span class="startup-heart">♥</span>
-      <span class="startup-spark">✦</span>
-    </div>
-    <p>Waking up Dr. Alistair Vance · Engram-0 Digital Twin…</p>
-  </div>
-
   <div class="app simple-app cx-lab" style="--chat-width: 405px;">
     <main class="workspace">
+      <!-- Top Sanctuary Header -->
       <header class="simple-header">
         <div class="workspace-brand">
           <button type="button" class="icon-button is-active" id="btn-toggle-left" title="Toggle twins &amp; connectome pane">
@@ -33,7 +25,7 @@
           <span class="cute-logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>
           </span>
-          <span>cortex² × Engram-0 <small class="cx-tagline">Reversible Thermodynamic Brain Decoder · gemini-4-argon (high)</small></span>
+          <span>cortex² × Engram-0 <small class="cx-tagline">Brain Lab · Reversible Thermodynamic Brain Decoder</small></span>
         </div>
 
         <div class="focused-brain">
@@ -46,10 +38,16 @@
           <button type="button" class="chat-toggle active" onclick="runSymplecticDecode()" title="Integrate 35% Poisson Probe via Störmer-Verlet Leapfrog">
             <span>⚡ Decode Probe</span>
           </button>
-          <a href="connectome_hopfield.html" class="chat-toggle" title="Open ConnectomeHopfield 3D Companion">
-            <span>ConnectomeHopfield</span>
+          <a href="/sanctuary" class="chat-toggle" title="Open Fullscreen 3D Brain Mesh Sanctuary">
+            <span>🧠 3D Sanctuary</span>
           </a>
-          <a href="thermo_spi.html" class="chat-toggle" title="Open ThermoSPI 310.15K Sleep Pruning Studio">
+          <a href="/connectome" class="chat-toggle" title="Open Connectome Hub">
+            <span>🌐 Connectome Hub</span>
+          </a>
+          <a href="/" class="chat-toggle" title="Open Quantum Hopfield Cockpit">
+            <span>⚡ Cockpit</span>
+          </a>
+          <a href="/thermo" class="chat-toggle" title="Open ThermoSPI 310.15K Sleep Pruning Studio">
             <span>ThermoSPI</span>
           </a>
           <button type="button" class="chat-toggle active" id="btn-toggle-right">
@@ -58,8 +56,12 @@
           </button>
         </div>
       </header>
+        </div>
+      </header>
 
+      <!-- Workspace Body -->
       <div class="workspace-body">
+        <!-- Left Collapsible Glass Pane -->
         <aside class="workspace-pane pane-left" id="left-pane" style="width: 300px;" aria-label="Consolidated Engram Twins &amp; Views">
           <header class="pane-heading">
             <h2>Dr. Vance Engram Twins (M=8)</h2>
@@ -109,7 +111,9 @@
           </div>
         </aside>
 
+        <!-- Center 3D Brain Habitat & Studio Views -->
         <section class="main-content">
+          <!-- View 1: 3D Brain Scene + 8-Orb Softmax Overlay + Live Cortical Strip -->
           <div class="simple-habitat cx-habitat with-qviz" id="habitat-view">
             <div class="brain-scene" id="brain-scene-container">
               <div class="energy-pill">
@@ -126,6 +130,7 @@
             </div>
           </div>
 
+          <!-- Top-right 3D Scene Options -->
           <div class="scene-options" id="scene-options-bar">
             <button type="button" class="selected" id="opt-inside" onclick="toggleSceneOption('inside')"><span>Inside</span></button>
             <button type="button" class="selected" id="opt-fibers" onclick="toggleSceneOption('fibers')"><span>Fibers</span></button>
@@ -135,6 +140,7 @@
             <button type="button" id="opt-reverse" onclick="triggerReverseLeapfrog()"><span>Reverse (-dt)</span></button>
           </div>
 
+          <!-- Floating 8-Orb Softmax Attention & 50-Trial Ledger Card (.cx-qviz) -->
           <section class="cx-qviz" id="home-qviz" aria-label="Continuous Modern Hopfield Softmax Marginals">
             <header>
               <strong>Modern Hopfield Softmax s(q*)</strong>
@@ -158,6 +164,7 @@
             </figure>
           </section>
 
+          <!-- View 2: Google H01 Neuroglancer (xy-3d) Petavoxel Split Studio -->
           <div class="feature-page" id="h01-view" style="display: none;">
             <header>
               <div>
@@ -196,6 +203,7 @@
             </div>
           </div>
 
+          <!-- View 3: Semantic Tokens & Spatial Thoughts -->
           <div class="simple-thoughts" id="thoughts-list-view" style="display: none;">
             <div class="thoughts-heading">
               <div>
@@ -207,6 +215,7 @@
             <div class="thought-list" id="thought-cards-container"></div>
           </div>
 
+          <!-- View 4: 6 Automated Sandbox Verification Assertions -->
           <div class="feature-page" id="assertions-view" style="display: none;">
             <header>
               <div>
@@ -219,6 +228,7 @@
           </div>
         </section>
 
+        <!-- Right Collapsible Glass Pane: Dr. Alistair Vance SPI Chat & Telemetry -->
         <aside class="workspace-pane pane-right" id="right-pane" style="width: 405px;" aria-label="Dr. Alistair Vance SPI &amp; Telemetry">
           <header class="pane-heading">
             <h2>Dr. Alistair Vance · SPI</h2>
@@ -260,6 +270,6 @@
     </main>
   </div>
 
-  <script src="index_app.js"></script>
+  <script src="/engram0/web/index_app.js"></script>
 </body>
 </html>
